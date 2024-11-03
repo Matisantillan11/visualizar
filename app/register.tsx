@@ -1,9 +1,9 @@
 import { SafeAreaView, Text } from 'react-native'
 
-export default function TabTwoScreen() {
+export default function Register() {
 	return (
 		<SafeAreaView>
-			<Text>Explore</Text>
+			<Text>Login</Text>
 		</SafeAreaView>
 	)
 }
