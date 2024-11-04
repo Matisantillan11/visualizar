@@ -15,7 +15,7 @@ export const useOnboarding = () => {
 			const onboarding = await getItem('onboarding')
 			console.log({ onboarding })
 			if (onboarding) {
-				router.push('/register')
+				router.push('/login')
 			} else {
 				storeItem({ pairs: [{ key: 'onboarding', value: true }] })
 				setHasToShowOnboarding(true)
