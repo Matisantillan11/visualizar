@@ -4,7 +4,7 @@ import { ThemedTextVariants } from '../interfaces'
 const variants = {
 	default: {
 		fontSize: 14,
-		color: theme.gray.gray300,
+		color: theme.gray.gray500,
 	},
 	h1: {
 		fontSize: 24,

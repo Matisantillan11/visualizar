@@ -1,21 +1,25 @@
+import { LoginIllustration, theme } from '@/modules/core'
 import { Button, ButtonVariants, Container, Input, ThemedText } from '@/modules/shared'
+import { Link, useRouter } from 'expo-router'
+import React from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import { theme } from '@/modules/core'
 import { ThemedTextVariants } from '@/modules/shared/components/UI/text/interfaces'
 import AntDesign from '@expo/vector-icons/AntDesign'
 import Ionicons from '@expo/vector-icons/Ionicons'
-import { Link } from 'expo-router'
 
 export default function Login() {
+	const router = useRouter()
+
 	return (
 		<Container>
-			<View style={{ height: 240, width: 100 }} />
+			<View style={styles.illustrationContainer}>
+				<LoginIllustration />
+			</View>
 
 			<ThemedText style={styles.title}>Hola!{'\n'}Inicia sesión</ThemedText>
 			<View style={styles.inputContainer}>
 				<Input
-					disabled
 					placeholder='Correo electrónico'
 					rightIcon={<Ionicons name='at' size={16} color={theme.gray.gray400} style={styles.iconRight} />}
 				/>
@@ -33,7 +37,9 @@ export default function Login() {
 				</View>
 			</View>
 			<View style={styles.buttonsContainer}>
-				<Button variant={ButtonVariants.solid}>Ingresar</Button>
+				<Button onPress={() => router.push('/validate-code')} variant={ButtonVariants.solid}>
+					Ingresar
+				</Button>
 				<View style={styles.orContainer}>
 					<View style={styles.line} />
 					<ThemedText variant={ThemedTextVariants.default} style={styles.orText}>
@@ -63,11 +69,12 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
-	inputContainer: {
-		gap: 16,
-	},
+	illustrationContainer: { justifyContent: 'center', alignItems: 'center' },
 	title: {
 		marginVertical: 16,
+	},
+	inputContainer: {
+		gap: 16,
 	},
 	iconRight: {
 		marginRight: 8,
@@ -84,7 +91,7 @@ const styles = StyleSheet.create({
 		fontWeight: 'bold',
 	},
 	buttonsContainer: {
-		marginTop: 32,
+		marginTop: 64,
 		gap: 16,
 		paddingHorizontal: 48,
 	},

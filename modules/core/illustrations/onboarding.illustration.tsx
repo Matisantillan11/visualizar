@@ -1,8 +1,9 @@
 import * as React from 'react'
 
-import Svg, { ClipPath, Defs, G, Path } from 'react-native-svg'
-export const OnboardingIllustration = (props: any) => (
-	<Svg xmlns='http://www.w3.org/2000/svg' width={351} height={325} fill='none' {...props}>
+import Svg, { ClipPath, Defs, G, Path, SvgProps } from 'react-native-svg'
+
+export const OnboardingIllustration = (props: SvgProps) => (
+	<Svg width={351} height={325} fill='none' {...props}>
 		<G clipPath='url(#a)'>
 			<Path
 				fill='#F3F5FD'
