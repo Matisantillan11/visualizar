@@ -6,15 +6,17 @@ import {
 	ThemedText,
 	ThemedTextVariants,
 } from '@/components/UI'
+import { Link, useRouter } from 'expo-router'
 import { Pressable, StyleSheet, View } from 'react-native'
 import { getEmailClients, openInbox } from 'react-native-email-link'
 
-import { CodeInput } from '@/components/validate-code-input/validate-code-input.component'
-import { Link } from 'expo-router'
+import { CodeInput } from '@/modules/auth'
 import React from 'react'
 import { theme } from '@/constants'
 
 export default function ValidateCode() {
+	const router = useRouter()
+
 	const onOpenEmailApp = async () => {
 		const clients = await getEmailClients()
 		openInbox({
@@ -57,7 +59,9 @@ export default function ValidateCode() {
 			</ThemedText>
 
 			<View style={styles.buttonsContainer}>
-				<Button /* onPress={() => router.push('/(tabs)')} */ variant={ButtonVariants.solid}>Validar código</Button>
+				<Button onPress={() => router.push('/(app)')} variant={ButtonVariants.solid}>
+					Validar código
+				</Button>
 			</View>
 		</Container>
 	)

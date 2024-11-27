@@ -1,5 +1,5 @@
-import { ThemedTextVariants } from '../interfaces'
 import { theme } from '@/constants'
+import { ThemedTextVariants } from '../interfaces'
 
 const variants = {
 	default: {

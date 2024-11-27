@@ -1,11 +1,10 @@
-import { Button, ButtonVariants, Input, ThemedModal, ThemedText } from '@/modules/shared'
+import { Button, ButtonVariants, Input, ThemedModal, ThemedText, ThemedTextVariants } from '@/components/UI'
 import { StyleSheet, View } from 'react-native'
 
 import { ConfirmEmailModalProps } from '../../interfaces/confirm-email-modal.interface'
 import { FC } from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons'
-import { ThemedTextVariants } from '@/modules/shared/components/UI/text/interfaces'
-import { theme } from '@/modules/core/constants'
+import { theme } from '@/constants'
 
 export const ConfirmEmailModal: FC<ConfirmEmailModalProps> = ({ isVisible, onClose, onClick }) => {
 	return (
