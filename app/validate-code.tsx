@@ -1,21 +1,24 @@
-import { DataSecurityIllustration, theme } from '@/modules/core'
-import { Button, ButtonVariants, Container, ThemedText } from '@/modules/shared'
-import { Link, useRouter } from 'expo-router'
+import {
+	Button,
+	ButtonVariants,
+	Container,
+	DataSecurityIllustration,
+	ThemedText,
+	ThemedTextVariants,
+} from '@/components/UI'
 import { Pressable, StyleSheet, View } from 'react-native'
 import { getEmailClients, openInbox } from 'react-native-email-link'
 
-import { CodeInput } from '@/modules/core/auth/components/validate-code-input/validate-code-input.component'
-import { ThemedTextVariants } from '@/modules/shared/components/UI/text/interfaces'
+import { CodeInput } from '@/components/validate-code-input/validate-code-input.component'
+import { Link } from 'expo-router'
 import React from 'react'
+import { theme } from '@/constants'
 
 export default function ValidateCode() {
-	const router = useRouter()
-
-	const onOpenEmailApp = () => {
-		const clients = getEmailClients()
-		console.log({ clients })
+	const onOpenEmailApp = async () => {
+		const clients = await getEmailClients()
 		openInbox({
-			app: 'gmail',
+			app: clients[0].id,
 		})
 	}
 
@@ -45,7 +48,7 @@ export default function ValidateCode() {
 			</View>
 			<ThemedText variant={ThemedTextVariants.default} style={styles.noReceived}>
 				No recibiste tu código?
-				<Link href='/register'>
+				<Link href='/validate-code'>
 					<ThemedText variant={ThemedTextVariants.default} style={styles.coloredNoReceivedText}>
 						{' '}
 						Enviar nuevamente.
@@ -54,9 +57,7 @@ export default function ValidateCode() {
 			</ThemedText>
 
 			<View style={styles.buttonsContainer}>
-				<Button onPress={() => router.push('/(tabs)')} variant={ButtonVariants.solid}>
-					Validar código
-				</Button>
+				<Button /* onPress={() => router.push('/(tabs)')} */ variant={ButtonVariants.solid}>Validar código</Button>
 			</View>
 		</Container>
 	)

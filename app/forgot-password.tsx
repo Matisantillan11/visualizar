@@ -1,4 +1,4 @@
-import { Container, ThemedText } from '@/modules/shared'
+import { Container, ThemedText } from '@/components/UI'
 
 export default function ForgotPassword() {
 	return (

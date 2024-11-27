@@ -2,14 +2,19 @@ import 'react-native-reanimated'
 
 import * as SplashScreen from 'expo-splash-screen'
 
-import { AuthStack } from '@/modules/core'
-import { useFonts } from 'expo-font'
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native'
+
+import { Stack } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
+import { useColorScheme } from '@/hooks/useColorScheme'
 import { useEffect } from 'react'
+import { useFonts } from 'expo-font'
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
+	const colorScheme = useColorScheme()
 	const [loaded] = useFonts({
 		SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
 	})
@@ -24,5 +29,20 @@ export default function RootLayout() {
 		return null
 	}
 
-	return <AuthStack />
+	return (
+		<ThemeProvider value={/* colorScheme === 'dark' ? DarkTheme : */ DefaultTheme}>
+			<Stack
+				screenOptions={{
+					headerShown: false,
+				}}>
+				<Stack.Screen name='index' />
+				<Stack.Screen name='login' />
+				<Stack.Screen name='register' />
+				<Stack.Screen name='forgot-password' />
+				<Stack.Screen name='validate-code' />
+				<Stack.Screen name='+not-found' />
+			</Stack>
+			<StatusBar style='auto' />
+		</ThemeProvider>
+	)
 }

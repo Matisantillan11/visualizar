@@ -1,15 +1,35 @@
-import { LoginIllustration, theme } from '@/modules/core'
-import { Button, ButtonVariants, Container, Input, ThemedText } from '@/modules/shared'
+import {
+	Button,
+	ButtonVariants,
+	Container,
+	Input,
+	LoginIllustration,
+	ThemedText,
+	ThemedTextVariants,
+} from '@/components/UI'
 import { Link, useRouter } from 'expo-router'
-import React from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import { ThemedTextVariants } from '@/modules/shared/components/UI/text/interfaces'
 import AntDesign from '@expo/vector-icons/AntDesign'
 import Ionicons from '@expo/vector-icons/Ionicons'
+import React from 'react'
+import { theme } from '@/constants'
+import { useStorage } from '@/hooks'
 
 export default function Login() {
 	const router = useRouter()
+	const { getItem } = useStorage()
+
+	/* useEffect(() => {
+		const validateOnboarding = async () => {
+			const onboarding = await getItem('onboarding')
+			if (!onboarding) {
+				
+			}
+		}
+
+		validateOnboarding()
+	}, []) */
 
 	return (
 		<Container>

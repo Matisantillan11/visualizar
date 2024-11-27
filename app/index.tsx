@@ -1,11 +1,11 @@
-import { OnboardingIllustration, theme } from '@/modules/core'
+import { Loader, OnboardingIllustration } from '@/components/UI'
 import { Text, View, useWindowDimensions } from 'react-native'
 
-import { useOnboarding } from '@/modules/core/auth/hooks/use-onboarding.hook'
-import { Loader } from '@/modules/shared'
 import AntDesign from '@expo/vector-icons/AntDesign'
 import { Link } from 'expo-router'
 import React from 'react'
+import { theme } from '@/constants'
+import { useOnboarding } from '@/hooks/use-onboarding.hook'
 
 export default function Onboarding() {
 	const { height } = useWindowDimensions()
@@ -36,12 +36,12 @@ export default function Onboarding() {
 
 				<View
 					style={{
+						flex: 1,
 						alignItems: 'center',
 						justifyContent: 'center',
-						marginTop: 40,
 					}}>
 					<Link
-						href='/register'
+						href='/login'
 						style={{
 							width: 45,
 							height: 45,
@@ -49,7 +49,6 @@ export default function Onboarding() {
 							borderWidth: 3,
 							borderRadius: 100,
 							alignItems: 'center',
-							justifyContent: 'center',
 						}}>
 						<View
 							style={{

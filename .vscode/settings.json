@@ -1,0 +1,156 @@
+{
+	// Sets the number of spaces used for indentation.
+	"editor.tabSize": 2,
+
+	// Sets the scale of the minimap.
+	"editor.minimap.scale": 1,
+
+	// Automatically formats the code on save.
+	"editor.formatOnSave": true,
+
+	// Inserts spaces instead of tabs for indentation.
+	"editor.insertSpaces": true,
+
+	// Sets the size of the minimap.
+	"editor.minimap.size": "fill",
+
+	// Wraps tabs within lines.
+	"workbench.editor.wrapTabs": true,
+
+	// Shows bracket pairs.
+	"editor.guides.bracketPairs": true,
+
+	// Enables sticky scrolling, where the editor scrolls to keep the current line visible.
+	"editor.stickyScroll.enabled": true,
+
+	// Sets the height of editor tabs to a compact style.
+	"window.density.editorTabHeight": "compact",
+
+	// Automatically closes quotes.
+	"editor.autoClosingQuotes": "languageDefined",
+
+	// Colors bracket pairs.
+	"editor.bracketPairColorization.enabled": true,
+
+	// Automatically closes brackets.
+	"editor.autoClosingBrackets": "languageDefined",
+
+	// Pins tabs on a separate row.
+	"workbench.editor.pinnedTabsOnSeparateRow": true,
+
+	// Shows inlay hints for variable types.
+	"javascript.inlayHints.variableTypes.enabled": true,
+
+	// Shows inlay hints for parameter names.
+	"javascript.inlayHints.parameterNames.enabled": "all",
+
+	// Configures code actions that are triggered on save.
+	"editor.codeActionsOnSave": {
+		// Always sorts members.
+		"source.sortMembers": "always",
+		// Always organizes imports.
+		"source.organizeImports": "always",
+		// Always adds missing imports.
+		"source.addMissingImports": "always",
+		// Always fixes all code actions.
+		"source.fixAll": "always",
+		// Always fixes all ESLint code actions.
+		"source.fixAll.eslint": "always",
+		// Always triggers code actions on save.
+		"source.codeActionsOnSave": "always"
+	},
+
+	// Shows color decorations for syntax highlighting.
+	"editor.colorDecorators": true,
+
+	// Shows quick suggestions for other, comments, and strings.
+	"editor.quickSuggestions": {
+		"other": true,
+		"comments": true,
+		"strings": true
+	},
+
+	// Completes only snippets when pressing Tab.
+	"editor.tabCompletion": "onlySnippets",
+
+	// Excludes certain files and folders from search.
+	"search.exclude": {
+		"**/node_modules": true,
+		"package-lock.json": true
+	},
+
+	// Automatically closes HTML tags.
+	"html.autoClosingTags": true,
+
+	// Enables HTML formatting.
+	"html.format.enable": true,
+
+	// Indents inner HTML content.
+	"html.format.indentInnerHtml": true,
+
+	// Wraps HTML attributes aligned to multiple lines.
+	"html.format.wrapAttributes": "aligned-multiple",
+
+	// Sets the line length for wrapping HTML code.
+	"html.format.wrapLineLength": 100,
+
+	// Suggests HTML5 elements and attributes.
+	"html.suggest.html5": true,
+
+	// Enables JSON formatting.
+	"json.format.enable": true,
+
+	// Automatically closes JavaScript tags.
+	"javascript.autoClosingTags": true,
+
+	// Enables JavaScript formatting.
+	"javascript.format.enable": true,
+
+	// Inserts a space after comma delimiters.
+	"javascript.format.insertSpaceAfterCommaDelimiter": true,
+
+	// Inserts a space after the `function` keyword for anonymous functions.
+	"javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
+
+	// Inserts a space after opening and before closing JSX expression braces.
+	"javascript.format.insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces": false,
+
+	// Inserts a space after opening and before closing non-empty braces.
+	"javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+
+	// Inserts a space before and after binary operators.
+	"javascript.format.insertSpaceBeforeAndAfterBinaryOperators": true,
+
+	// Automatically imports modules in JavaScript.
+	"javascript.suggest.autoImports": true,
+
+	// Enables JavaScript suggestions.
+	"javascript.suggest.enabled": true,
+
+	// Suggests names in JavaScript.
+	"javascript.suggest.names": true,
+
+	// Suggests paths in JavaScript.
+	"javascript.suggest.paths": true,
+
+	// Enables suggestion actions in JavaScript.
+	"javascript.suggestionActions.enabled": true,
+
+	// Enables JavaScript validation.
+	"javascript.validate.enable": true,
+
+	// Highlights invisible characters in the editor.
+	"editor.unicodeHighlight.invisibleCharacters": true,
+
+	// Highlights ambiguous characters in the editor.
+	"editor.unicodeHighlight.ambiguousCharacters": true,
+
+	// Highlights non-basic ASCII characters in the editor.
+	"editor.unicodeHighlight.nonBasicASCII": true,
+
+	// Enables class member snippet suggestions in JavaScript.
+	"javascript.suggest.classMemberSnippets.enabled": true,
+
+	// Sets the preferred style for JSX attribute completion.
+	"javascript.preferences.jsxAttributeCompletionStyle": "braces"
+}
