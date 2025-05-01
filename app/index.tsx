@@ -19,14 +19,14 @@ export default function Onboarding() {
     <View
       style={{
         height,
-        paddingTop: 64,
+        paddingTop: 125,
         paddingHorizontal: 24,
         alignItems: "center",
-        backgroundColor: theme.primary.brand700,
+        backgroundColor: theme.primary.brand950,
       }}
     >
       <OnboardingIllustration />
-      <View style={{ flex: 1, marginTop: 50 }}>
+      <View style={{ flex: 1 }}>
         <Text
           style={{
             fontSize: 20,
@@ -42,7 +42,7 @@ export default function Onboarding() {
           style={{
             fontSize: 14,
             textAlign: "center",
-            color: theme.gray.gray350,
+            color: theme.primary.brand100,
             marginTop: 24,
           }}
         >
@@ -66,19 +66,30 @@ export default function Onboarding() {
               borderWidth: 3,
               borderRadius: 100,
               alignItems: "center",
+              justifyContent: "center",
             }}
           >
             <View
               style={{
-                width: 30,
-                height: 30,
+                width: 45,
+                height: 45,
                 borderRadius: 100,
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: theme.primary.brand800,
               }}
             >
-              <AntDesign name="right" size={16} color="white" />
+              <View
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: 100,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: theme.primary.brand800,
+                }}
+              >
+                <AntDesign name="right" size={16} color="white" />
+              </View>
             </View>
           </Link>
         </View>

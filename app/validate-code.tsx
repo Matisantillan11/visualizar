@@ -104,12 +104,12 @@ const styles = StyleSheet.create({
   },
 
   noReceived: {
-    color: theme.base.black,
+    color: theme.base.white,
     textAlign: "center",
     marginTop: 32,
   },
   coloredNoReceivedText: {
-    color: theme.primary.brand700,
+    color: theme.primary.brand400,
     textAlign: "center",
     fontWeight: "bold",
   },

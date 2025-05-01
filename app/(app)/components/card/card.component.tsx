@@ -1,5 +1,4 @@
 import { ThemedText, ThemedTextVariants } from "@/components/UI";
-import { theme } from "@/constants";
 import { Image } from "expo-image";
 import { View } from "react-native";
 import { SizeVariants } from "../../interfaces";
@@ -26,7 +25,7 @@ export const Card = ({ size = SizeVariants.md }: CardProps) => {
       <View style={{ alignItems: "center", marginVertical: 8 }}>
         <ThemedText
           variant={ThemedTextVariants.default}
-          style={{ fontSize: 16, color: theme.base.black }}
+          style={{ fontSize: 16 }}
         >
           The tiny dragon
         </ThemedText>

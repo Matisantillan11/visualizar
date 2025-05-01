@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   },
   forgotLink: {
     textAlign: "right",
-    color: theme.primary.brand950,
+    color: theme.primary.brand400,
     fontWeight: "bold",
   },
   buttonsContainer: {
@@ -150,7 +150,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   line: { flex: 1, height: 1, backgroundColor: theme.gray.gray400 },
-  orText: { color: theme.base.black, textAlign: "center", marginHorizontal: 8 },
+  orText: {
+    color: theme.gray.gray300,
+    textAlign: "center",
+    marginHorizontal: 8,
+  },
   grayButton: {
     backgroundColor: theme.gray.gray300,
   },
