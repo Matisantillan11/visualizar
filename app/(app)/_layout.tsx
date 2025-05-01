@@ -4,6 +4,7 @@ import * as SplashScreen from 'expo-splash-screen'
 
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native'
 
+import { AppNavbar } from '@/components/navbar/app-navbar.component'
 import { useFonts } from 'expo-font'
 import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
@@ -28,10 +29,10 @@ export default function AppLayout() {
 	}
 
 	return (
-		<ThemeProvider value={/* colorScheme === 'dark' ? DarkTheme : */ DefaultTheme}>
+		<ThemeProvider value={DefaultTheme}>
 			<Stack
 				screenOptions={{
-					headerShown: false,
+					header: (props) => <AppNavbar {...props} />,
 				}}>
 				<Stack.Screen name='index' />
 			</Stack>
