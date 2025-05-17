@@ -1,20 +1,37 @@
-import { SafeAreaView, StyleSheet, View } from 'react-native'
+import { VerticalLinearGradient } from "@/components/linear-gradient/linear-gradient.component";
+import { FC } from "react";
+import { StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ContainerProps } from "./interfaces";
 
-import { FC } from 'react'
-import { ContainerProps } from './interfaces'
+export const Container: FC<ContainerProps> = ({
+  children,
+  gradient = false,
+  ...props
+}) => {
+  if (gradient) {
+    return (
+      <VerticalLinearGradient>
+        <SafeAreaView edges={["top", "bottom"]}>
+          <View style={styles.container} {...props}>
+            {children}
+          </View>
+        </SafeAreaView>
+      </VerticalLinearGradient>
+    );
+  }
 
-export const Container: FC<ContainerProps> = ({ children, ...props }) => {
-	return (
-		<SafeAreaView>
-			<View style={styles.container} {...props}>
-				{children}
-			</View>
-		</SafeAreaView>
-	)
-}
+  return (
+    <SafeAreaView edges={["top", "bottom"]}>
+      <View style={styles.container} {...props}>
+        {children}
+      </View>
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
-	container: {
-		padding: 32,
-	},
-})
+  container: {
+    padding: 32,
+  },
+});

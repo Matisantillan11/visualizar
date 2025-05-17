@@ -7,8 +7,7 @@ import {
   ThemedTextVariants,
 } from "@/components/UI";
 import { Link, useRouter } from "expo-router";
-import { Pressable, StyleSheet, View } from "react-native";
-import { getEmailClients, openInbox } from "react-native-email-link";
+import { StyleSheet, View } from "react-native";
 
 import { theme } from "@/constants";
 import React from "react";
@@ -17,33 +16,13 @@ import { CodeInput } from "./components/validate-code-input";
 export default function ValidateCode() {
   const router = useRouter();
 
-  const onOpenEmailApp = async () => {
-    const clients = await getEmailClients();
-    openInbox({
-      app: clients[0].id,
-    });
-  };
-
   return (
-    <Container>
+    <Container gradient>
       <View style={styles.illustrationContainer}>
         <DataSecurityIllustration />
       </View>
 
-      <ThemedText style={styles.title}>
-        Ingresá tu código de verificación
-      </ThemedText>
-      <ThemedText variant={ThemedTextVariants.default} style={styles.subtitle}>
-        Enviamos un código de verificación a
-        <Pressable onPress={onOpenEmailApp}>
-          <ThemedText
-            variant={ThemedTextVariants.default}
-            style={styles.coloredNoReceivedText}
-          >
-            matias1.santillan@gmail.com
-          </ThemedText>
-        </Pressable>
-      </ThemedText>
+      <ThemedText style={styles.title}>Ingresá tu código</ThemedText>
       <View style={styles.inputContainer}>
         <CodeInput />
         <CodeInput />
@@ -56,14 +35,14 @@ export default function ValidateCode() {
         variant={ThemedTextVariants.default}
         style={styles.noReceived}
       >
-        No recibiste tu código?
+        No recibiste tu código? Asegurate de chequear tu spam o
         <Link href="/validate-code">
           <ThemedText
             variant={ThemedTextVariants.default}
             style={styles.coloredNoReceivedText}
           >
             {" "}
-            Enviar nuevamente.
+            solicita nuevas instrucciones.
           </ThemedText>
         </Link>
       </ThemedText>
@@ -81,32 +60,30 @@ export default function ValidateCode() {
 }
 
 const styles = StyleSheet.create({
-  illustrationContainer: { justifyContent: "center", alignItems: "center" },
+  illustrationContainer: {
+    marginTop: 96,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   title: {
     width: "auto",
-    marginVertical: 16,
+    marginVertical: 48,
     textAlign: "center",
-  },
-  subtitle: {
-    width: "auto",
-    textAlign: "center",
-    marginBottom: 32,
+    fontSize: 24,
+    fontWeight: "bold",
   },
   inputContainer: {
     gap: 16,
     flexDirection: "row",
   },
-
   buttonsContainer: {
-    marginTop: 32,
     gap: 16,
     paddingHorizontal: 48,
   },
-
   noReceived: {
     color: theme.base.white,
     textAlign: "center",
-    marginTop: 32,
+    marginVertical: 24,
   },
   coloredNoReceivedText: {
     color: theme.primary.brand400,

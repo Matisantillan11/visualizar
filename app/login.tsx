@@ -44,7 +44,7 @@ export default function Login() {
         <Justin />
       </View>
 
-      <ThemedText style={styles.title}>Hola!{"\n"}Inicia sesión</ThemedText>
+      <ThemedText style={styles.title}>¡Hola! Inicia sesión</ThemedText>
       <View style={styles.inputContainer}>
         <Input
           placeholder="Correo electrónico"
@@ -67,7 +67,7 @@ export default function Login() {
           top={-30}
         />
         <Button
-          onPress={() => router.push("/validate-code")}
+          onPress={() => router.push("/check-your-email")}
           variant={ButtonVariants.solid}
         >
           Ingresar
@@ -111,7 +111,10 @@ const styles = StyleSheet.create({
     backgroundColor: theme.error.error800,
   },
   title: {
-    marginVertical: 16,
+    textAlign: "center",
+    marginVertical: 32,
+    fontSize: 24,
+    fontWeight: "bold",
   },
   inputContainer: {
     gap: 16,

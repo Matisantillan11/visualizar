@@ -1,3 +1,5 @@
-import { ViewProps } from 'react-native'
+import { ViewProps } from "react-native";
 
-export interface ContainerProps extends ViewProps {}
+export interface ContainerProps extends ViewProps {
+  gradient?: boolean;
+}
