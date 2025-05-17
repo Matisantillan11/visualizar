@@ -1,19 +1,19 @@
-import { Loader, OnboardingIllustration } from "@/components/UI";
+import { OnboardingIllustration } from "@/components/UI";
 import { Text, View, useWindowDimensions } from "react-native";
 
+import { BlurView } from "@/components/UI/blur-view/blur-view.component";
 import { theme } from "@/constants";
-import { useOnboarding } from "@/hooks/use-onboarding.hook";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Link } from "expo-router";
 import React from "react";
 
 export default function Onboarding() {
   const { height } = useWindowDimensions();
-  const { hasToShowOnboarding, isChecking } = useOnboarding();
+  /*  const { hasToShowOnboarding, isChecking } = useOnboarding();
 
   if (isChecking || !hasToShowOnboarding) {
     return <Loader />;
-  }
+  } */
 
   return (
     <View
@@ -26,6 +26,13 @@ export default function Onboarding() {
       }}
     >
       <OnboardingIllustration />
+      <BlurView
+        color={theme.primary.brand300}
+        intensity={90}
+        size={520}
+        top={60}
+        left={-50}
+      />
       <View style={{ flex: 1 }}>
         <Text
           style={{

@@ -23,9 +23,6 @@ importers:
       expo:
         specifier: ~53.0.4
         version: 53.0.4(@babel/core@7.27.1)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0)))(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
-      expo-blur:
-        specifier: ~14.1.4
-        version: 14.1.4(expo@53.0.4(@babel/core@7.27.1)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0)))(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
       expo-constants:
         specifier: ~17.1.4
         version: 17.1.4(expo@53.0.4(@babel/core@7.27.1)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0)))(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))
@@ -1982,13 +1979,6 @@ packages:
 
   expo-asset@11.1.4:
     resolution: {integrity: sha512-e3210sF0YHKRTCjVUOVmDAJ0Dk4vepL9RocKe36S7S+VthoCZwsBGLAM2LLvBa1SdmODF92AS0Nrcfi/1/VlbQ==}
-    peerDependencies:
-      expo: '*'
-      react: '*'
-      react-native: '*'
-
-  expo-blur@14.1.4:
-    resolution: {integrity: sha512-55P9tK/RjJZEcu2tU7BqX3wmIOrGMOOkmHztJMMws+ZGHzvtjnPmT7dsQxhOU9vPj77oHnKetYHU2sik3iBcCw==}
     peerDependencies:
       expo: '*'
       react: '*'
@@ -6585,12 +6575,6 @@ snapshots:
       react-native: 0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0)
     transitivePeerDependencies:
       - supports-color
-
-  expo-blur@14.1.4(expo@53.0.4(@babel/core@7.27.1)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0)))(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0):
-    dependencies:
-      expo: 53.0.4(@babel/core@7.27.1)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0)))(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
-      react: 19.0.0
-      react-native: 0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0)
 
   expo-constants@17.1.4(expo@53.0.4(@babel/core@7.27.1)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0)))(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0)):
     dependencies:
