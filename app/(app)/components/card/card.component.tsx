@@ -1,34 +1,76 @@
-import { ThemedText, ThemedTextVariants } from "@/components/UI";
+import { Button, ThemedText, ThemedTextVariants } from "@/components/UI";
+import { theme } from "@/constants";
 import { Image } from "expo-image";
-import { View } from "react-native";
+import { useWindowDimensions, View } from "react-native";
 import { SizeVariants } from "../../interfaces";
-import { cardSizeVariants } from "./utils/card-variants";
 
 export interface CardProps {
+  isHorizontal: boolean;
   size?: SizeVariants;
 }
-export const Card = ({ size = SizeVariants.md }: CardProps) => {
-  const cardSize = cardSizeVariants(size);
+export const Card = ({ isHorizontal }: CardProps) => {
+  const { width } = useWindowDimensions();
+
   return (
     <View
       style={{
-        flex: 1,
-        marginRight: 12,
+        width: isHorizontal ? 150 : width,
         overflow: "hidden",
+        flexDirection: isHorizontal ? "column" : "row",
+        gap: isHorizontal ? 0 : 24,
       }}
     >
       <Image
-        style={{ flex: 1, borderRadius: 8, ...cardSize }}
+        style={{
+          borderRadius: 8,
+          width: 150,
+          height: 250,
+        }}
         contentFit="cover"
         source="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoKGktM4wNk7zxIoOJHs4djt9VLFd-005fFQ&s"
       />
-      <View style={{ alignItems: "center", marginVertical: 8 }}>
+      <View style={{ alignContent: "center", marginVertical: 8 }}>
         <ThemedText
           variant={ThemedTextVariants.default}
-          style={{ fontSize: 16 }}
+          style={{
+            fontSize: 16,
+            color: theme.primary.brand50,
+            fontWeight: "bold",
+          }}
         >
           The tiny dragon
         </ThemedText>
+        <ThemedText
+          variant={ThemedTextVariants.default}
+          style={{
+            fontSize: 14,
+            color: theme.primary.brand50,
+          }}
+        >
+          Rupert Carter
+        </ThemedText>
+
+        {!isHorizontal ? (
+          <ThemedText
+            variant={ThemedTextVariants.default}
+            style={{
+              fontSize: 14,
+              color: theme.primary.brand50,
+              textOverflow: "",
+              marginTop: 16,
+              maxWidth: 150,
+            }}
+          >
+            Lorem Ipsum is simply dummy text of the printing and typesetting
+            industry. Lorem Ipsum has been the industry's...
+          </ThemedText>
+        ) : null}
+
+        {!isHorizontal ? (
+          <Button style={{ maxWidth: 150, maxHeight: 28, marginTop: 16 }}>
+            Ver detalles
+          </Button>
+        ) : null}
       </View>
     </View>
   );

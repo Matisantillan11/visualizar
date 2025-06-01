@@ -4,11 +4,12 @@ import { Text, View, useWindowDimensions } from "react-native";
 import { BlurView } from "@/components/UI/blur-view/blur-view.component";
 import { theme } from "@/constants";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import React from "react";
 
 export default function Onboarding() {
   const { height } = useWindowDimensions();
+  const router = useRouter();
   /*  const { hasToShowOnboarding, isChecking } = useOnboarding();
 
   if (isChecking || !hasToShowOnboarding) {
@@ -65,7 +66,7 @@ export default function Onboarding() {
           }}
         >
           <Link
-            href="/login"
+            href="/(app)"
             style={{
               width: 45,
               height: 45,

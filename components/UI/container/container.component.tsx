@@ -7,13 +7,21 @@ import { ContainerProps } from "./interfaces";
 export const Container: FC<ContainerProps> = ({
   children,
   gradient = false,
+  withNavbar = false,
   ...props
 }) => {
   if (gradient) {
     return (
       <VerticalLinearGradient>
         <SafeAreaView edges={["top", "bottom"]}>
-          <View style={styles.container} {...props}>
+          <View
+            style={
+              withNavbar
+                ? { paddingHorizontal: 32, paddingBottom: 32 }
+                : styles.container
+            }
+            {...props}
+          >
             {children}
           </View>
         </SafeAreaView>

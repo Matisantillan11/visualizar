@@ -30,7 +30,7 @@ export default function CheckYourEmail() {
 
       <ThemedText style={styles.title}>Chequeá tu email</ThemedText>
       <ThemedText style={styles.subtitle} variant={ThemedTextVariants.default}>
-        Te enviamos instrucciones a tu correo para recuperar tu contraseña
+        Te enviamos un código a tu correo para ingresar a la plataforma!
       </ThemedText>
 
       <View style={styles.buttonsContainer}>
@@ -62,7 +62,6 @@ const styles = StyleSheet.create({
     color: theme.base.white,
     textAlign: "center",
   },
-
   buttonsContainer: {
     marginTop: 24,
     gap: 16,

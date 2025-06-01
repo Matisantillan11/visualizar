@@ -11,7 +11,7 @@ export const AppNavbar = (props: NativeStackHeaderProps) => {
     <Appbar.Header
       {...props}
       style={{
-        backgroundColor: theme.primary.brand950,
+        backgroundColor: theme.primary.brand800,
         paddingHorizontal: 20,
       }}
     >

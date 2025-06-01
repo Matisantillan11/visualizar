@@ -1,19 +1,15 @@
-import { SizeVariants } from '@/modules/home/interfaces'
+import { SizeVariants } from "@/app/(app)/interfaces";
 
 const sizeVariants = {
-	sm: {
-		width: 100,
-		height: 200,
-	},
-	md: {
-		width: 150,
-		height: 250,
-	},
-	lg: {},
-}
+  sm: {
+    width: 100,
+    height: 200,
+  },
+  md: {},
+  lg: {},
+};
 
 export const cardSizeVariants = (size: SizeVariants) => {
-	return {
-		SIZE: sizeVariants[size] ?? sizeVariants.md,
-	}
-}
+  console.log(SizeVariants[size]);
+  return sizeVariants[size] ?? sizeVariants.md;
+};

@@ -60,6 +60,7 @@ export default function RootLayout() {
         <Stack.Screen name="check-your-email" />
         <Stack.Screen name="validate-code" />
         <Stack.Screen name="+not-found" />
+        <Stack.Screen name="(app)" />
       </Stack>
       <StatusBar style="light" />
     </ThemeProvider>
