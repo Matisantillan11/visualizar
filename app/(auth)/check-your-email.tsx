@@ -35,7 +35,7 @@ export default function CheckYourEmail() {
 
       <View style={styles.buttonsContainer}>
         <Button
-          onPress={() => router.push("/validate-code")}
+          onPress={() => router.push("/(auth)/validate-code")}
           variant={ButtonVariants.solid}
         >
           Continuar

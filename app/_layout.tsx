@@ -1,8 +1,10 @@
 import "react-native-reanimated";
 
-import * as SplashScreen from "expo-splash-screen";
+import { ClerkProvider } from "@clerk/clerk-expo";
+import { tokenCache } from "@clerk/clerk-expo/token-cache";
 
 import { ThemeProvider } from "@react-navigation/native";
+import * as SplashScreen from "expo-splash-screen";
 
 import { AuthNavbar } from "@/components/navbar/auth-navbar.component";
 import { theme } from "@/constants";
@@ -49,20 +51,17 @@ export default function RootLayout() {
         },
       }}
     >
-      <Stack
-        screenOptions={{
-          header: (props) => <AuthNavbar {...props} />,
-        }}
-      >
-        <Stack.Screen name="index" />
-        <Stack.Screen name="login" />
-        <Stack.Screen name="register" />
-        <Stack.Screen name="check-your-email" />
-        <Stack.Screen name="validate-code" />
-        <Stack.Screen name="+not-found" />
-        <Stack.Screen name="(app)" />
-      </Stack>
-      <StatusBar style="light" />
+      <ClerkProvider tokenCache={tokenCache}>
+        <Stack
+          screenOptions={{
+            header: (props) => <AuthNavbar {...props} />,
+          }}
+        >
+          <Stack.Screen name="index" />
+          <Stack.Screen name="(auth)" />
+        </Stack>
+        <StatusBar style="light" />
+      </ClerkProvider>
     </ThemeProvider>
   );
 }
