@@ -66,7 +66,7 @@ export default function Onboarding() {
           }}
         >
           <Link
-            href="/(app)"
+            href="/(auth)"
             style={{
               width: 45,
               height: 45,

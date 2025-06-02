@@ -3,10 +3,10 @@ import {
   ButtonVariants,
   Container,
   Input,
+  Loader,
   ThemedText,
   ThemedTextVariants,
 } from "@/components/UI";
-import { useRouter } from "expo-router";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
 
 import { BlurView } from "@/components/UI/blur-view/blur-view.component";
@@ -14,15 +14,16 @@ import Ed from "@/components/UI/illustrations/ed-login.illustration";
 import Justin from "@/components/UI/illustrations/justin.illustration";
 import Kim from "@/components/UI/illustrations/kim.illustration";
 import { theme } from "@/constants";
-import { useStorage } from "@/hooks";
+
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";
+import useAuth from "./hooks/useAuth";
 
 export default function Login() {
-  const router = useRouter();
-  const { getItem } = useStorage();
   const { width, height } = useWindowDimensions();
+  const { isLoading, userEmailAttempt, setUserEmailAttempt, onSendEmailCode } =
+    useAuth();
 
   /* useEffect(() => {
     const validateOnboarding = async () => {
@@ -56,6 +57,8 @@ export default function Login() {
               style={styles.iconRight}
             />
           }
+          value={userEmailAttempt}
+          onChangeText={(value: string) => setUserEmailAttempt(value)}
         />
       </View>
       <View style={styles.buttonsContainer}>
@@ -66,11 +69,8 @@ export default function Login() {
           left={-width / 8}
           top={-30}
         />
-        <Button
-          onPress={() => router.push("/check-your-email")}
-          variant={ButtonVariants.solid}
-        >
-          Ingresar
+        <Button onPress={onSendEmailCode} variant={ButtonVariants.solid}>
+          {isLoading ? <Loader /> : "Ingresar"}
         </Button>
         <View style={styles.orContainer}>
           <View style={styles.line} />

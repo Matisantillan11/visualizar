@@ -3,18 +3,25 @@ import {
   ButtonVariants,
   Container,
   DataSecurityIllustration,
+  Input,
+  Loader,
   ThemedText,
   ThemedTextVariants,
 } from "@/components/UI";
-import { Link, useRouter } from "expo-router";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 import { theme } from "@/constants";
 import React from "react";
-import { CodeInput } from "./components/validate-code-input";
+import useAuth from "./hooks/useAuth";
 
 export default function ValidateCode() {
-  const router = useRouter();
+  const {
+    isLoading,
+    userCodeAttempt,
+    setUserCodeAttempt,
+    onSendEmailCode,
+    onValidateCode,
+  } = useAuth();
 
   return (
     <Container gradient>
@@ -24,19 +31,19 @@ export default function ValidateCode() {
 
       <ThemedText style={styles.title}>Ingresá tu código</ThemedText>
       <View style={styles.inputContainer}>
-        <CodeInput />
-        <CodeInput />
-        <CodeInput />
-        <CodeInput />
-        <CodeInput />
-        <CodeInput />
+        <Input
+          placeholder="Código"
+          keyboardType="numeric"
+          value={userCodeAttempt}
+          onChangeText={(value) => setUserCodeAttempt(value)}
+        />
       </View>
       <ThemedText
         variant={ThemedTextVariants.default}
         style={styles.noReceived}
       >
         No recibiste tu código? Asegurate de chequear tu spam o
-        <Link href="/validate-code">
+        <TouchableOpacity onPress={onSendEmailCode}>
           <ThemedText
             variant={ThemedTextVariants.default}
             style={styles.coloredNoReceivedText}
@@ -44,15 +51,12 @@ export default function ValidateCode() {
             {" "}
             solicita nuevas instrucciones.
           </ThemedText>
-        </Link>
+        </TouchableOpacity>
       </ThemedText>
 
       <View style={styles.buttonsContainer}>
-        <Button
-          onPress={() => router.push("/(app)")}
-          variant={ButtonVariants.solid}
-        >
-          Validar código
+        <Button onPress={onValidateCode} variant={ButtonVariants.solid}>
+          {isLoading ? <Loader /> : "Validar código"}
         </Button>
       </View>
     </Container>
@@ -74,7 +78,6 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     gap: 16,
-    flexDirection: "row",
   },
   buttonsContainer: {
     gap: 16,
