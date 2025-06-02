@@ -80,7 +80,6 @@ export default function Login() {
           left={-width / 8}
           top={-30}
         />
-
         <Button onPress={onSendEmailCode} variant={ButtonVariants.solid}>
           {isLoading ? <Loader /> : "Ingresar"}
         </Button>
