@@ -2,7 +2,7 @@ import { Container, ThemedText, ThemedTextVariants } from "@/components/UI";
 import { theme } from "@/constants";
 import { ScrollView, StyleSheet, View } from "react-native";
 import CardAligmentButton from "./components/card-aligment-button/card-aligment-button.component";
-import { Card } from "./components/card/card.component";
+import Card from "./components/card/card.component";
 import useBooksAligment, { BooksAligment } from "./hooks/use-books-aligment";
 
 export default function app() {
@@ -12,6 +12,7 @@ export default function app() {
     <Container gradient withNavbar>
       <View
         style={{
+          marginTop: -32,
           marginBottom: 21,
           flexDirection: "row",
           alignItems: "center",

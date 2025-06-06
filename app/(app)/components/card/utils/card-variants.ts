@@ -9,7 +9,6 @@ const sizeVariants = {
   lg: {},
 };
 
-export const cardSizeVariants = (size: SizeVariants) => {
-  console.log(SizeVariants[size]);
+export default function cardSizeVariants(size: SizeVariants) {
   return sizeVariants[size] ?? sizeVariants.md;
-};
+}

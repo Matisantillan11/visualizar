@@ -1,1 +1,1 @@
-export * from './validate-code-input.component'
+export { default as CodeInput } from "./validate-code-input.component";

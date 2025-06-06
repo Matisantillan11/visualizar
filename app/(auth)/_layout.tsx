@@ -1,11 +1,14 @@
 import { AuthNavbar } from "@/components/navbar/auth-navbar.component";
-import { useAuth } from "@clerk/clerk-expo";
+import { Loader } from "@/components/UI";
 import { Redirect, Stack } from "expo-router";
+import { useAuthContext } from "./hooks/useAuthContext";
 
 export default function AuthLayout() {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, isAuthChecked, isChecking } = useAuthContext();
 
-  if (isSignedIn) {
+  if (isChecking) return <Loader />;
+
+  if (isAuthChecked && isSignedIn) {
     return <Redirect href={"/(app)"} />;
   }
 
@@ -18,7 +21,7 @@ export default function AuthLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="check-your-email" />
       <Stack.Screen name="validate-code" />
-      <Stack.Screen name="/(app)" />
+      <Stack.Screen name="(app)" />
     </Stack>
   );
 }

@@ -15,11 +15,7 @@ export const Container: FC<ContainerProps> = ({
       <VerticalLinearGradient>
         <SafeAreaView edges={["top", "bottom"]}>
           <View
-            style={
-              withNavbar
-                ? { paddingHorizontal: 32, paddingBottom: 32 }
-                : styles.container
-            }
+            style={withNavbar ? { paddingHorizontal: 32 } : styles.container}
             {...props}
           >
             {children}

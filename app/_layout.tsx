@@ -7,11 +7,13 @@ import { ThemeProvider } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
 
 import { AuthNavbar } from "@/components/navbar/auth-navbar.component";
+import { Loader } from "@/components/UI";
 import { theme } from "@/constants";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
+import { AuthContextProvider } from "./(auth)/context/useAuth.context";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -27,9 +29,7 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
+  if (!loaded) return <Loader />;
 
   return (
     <ThemeProvider
@@ -52,15 +52,17 @@ export default function RootLayout() {
       }}
     >
       <ClerkProvider tokenCache={tokenCache}>
-        <Stack
-          screenOptions={{
-            header: (props) => <AuthNavbar {...props} />,
-          }}
-        >
-          <Stack.Screen name="index" />
-          <Stack.Screen name="(auth)" />
-        </Stack>
-        <StatusBar style="light" />
+        <AuthContextProvider>
+          <Stack
+            screenOptions={{
+              header: (props) => <AuthNavbar {...props} />,
+            }}
+          >
+            <Stack.Screen name="index" />
+            <Stack.Screen name="(auth)" />
+          </Stack>
+          <StatusBar style="light" />
+        </AuthContextProvider>
       </ClerkProvider>
     </ThemeProvider>
   );
