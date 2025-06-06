@@ -50,9 +50,6 @@ importers:
       expo-linking:
         specifier: ~7.1.4
         version: 7.1.4(expo@53.0.4(@babel/core@7.27.1)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0)))(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
-      expo-mail-composer:
-        specifier: ~14.1.4
-        version: 14.1.4(expo@53.0.4(@babel/core@7.27.1)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0)))(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))
       expo-router:
         specifier: ~5.0.3
         version: 5.0.3(922ca94bf9786b7c265d26bd7a774aa5)
@@ -86,9 +83,6 @@ importers:
       react-native:
         specifier: 0.79.1
         version: 0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0)
-      react-native-email-link:
-        specifier: ^1.16.1
-        version: 1.16.1(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
       react-native-gesture-handler:
         specifier: ~2.24.0
         version: 2.24.0(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
@@ -2272,11 +2266,6 @@ packages:
       react: '*'
       react-native: '*'
 
-  expo-mail-composer@14.1.4:
-    resolution: {integrity: sha512-0s3HD45xf7ow2YeoS76WSbzZDAXcE5hOQnxFJwF6gIHzuYxgSX+al06+fl0Z3cfTOZTu4ohHRseQ9xOFFNiWIg==}
-    peerDependencies:
-      expo: '*'
-
   expo-modules-autolinking@2.1.9:
     resolution: {integrity: sha512-54InfnWy1BR54IDZoawqdFAaF2lyLHe9J+2dZ7y91/36jVpBtAval39ZKt2IISFJZ7TVglsojl4P5BDcDGcvjQ==}
     hasBin: true
@@ -3670,12 +3659,6 @@ packages:
     peerDependencies:
       react: '*'
       react-native: '*'
-
-  react-native-email-link@1.16.1:
-    resolution: {integrity: sha512-uTolJXOa6HKPEiRAQuLKN/OhVwUA4xS++yPV6YiCtRBWxl2q3FUlrJt1G6plfMAEU4qNhmwZnH3tCJ9WNYIDhg==}
-    peerDependencies:
-      react: '>=16.8.0'
-      react-native: '>=0.40.0'
 
   react-native-gesture-handler@2.24.0:
     resolution: {integrity: sha512-ZdWyOd1C8axKJHIfYxjJKCcxjWEpUtUWgTOVY2wynbiveSQDm8X/PDyAKXSer/GOtIpjudUbACOndZXCN3vHsw==}
@@ -7199,10 +7182,6 @@ snapshots:
       - expo
       - supports-color
 
-  expo-mail-composer@14.1.4(expo@53.0.4(@babel/core@7.27.1)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0)))(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)):
-    dependencies:
-      expo: 53.0.4(@babel/core@7.27.1)(@expo/metro-runtime@5.0.4(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0)))(react-native-webview@13.13.5(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
-
   expo-modules-autolinking@2.1.9:
     dependencies:
       '@expo/spawn-async': 1.7.2
@@ -8881,11 +8860,6 @@ snapshots:
       - supports-color
 
   react-native-edge-to-edge@1.6.0(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0):
-    dependencies:
-      react: 19.0.0
-      react-native: 0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0)
-
-  react-native-email-link@1.16.1(react-native@0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0):
     dependencies:
       react: 19.0.0
       react-native: 0.79.1(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0)
