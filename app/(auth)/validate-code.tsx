@@ -12,7 +12,7 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 import { theme } from "@/constants";
 import React from "react";
-import useAuth from "./hooks/useAuth";
+import { useAuthContext } from "./hooks/useAuthContext";
 
 export default function ValidateCode() {
   const {
@@ -21,7 +21,7 @@ export default function ValidateCode() {
     setUserCodeAttempt,
     onSendEmailCode,
     onValidateCode,
-  } = useAuth();
+  } = useAuthContext();
 
   return (
     <Container gradient>
@@ -32,8 +32,11 @@ export default function ValidateCode() {
       <ThemedText style={styles.title}>Ingresá tu código</ThemedText>
       <View style={styles.inputContainer}>
         <Input
+          onPressOut={(e) => e.stopPropagation()}
+          maxLength={6}
           placeholder="Código"
-          keyboardType="numeric"
+          keyboardType="number-pad"
+          returnKeyType="done"
           value={userCodeAttempt}
           onChangeText={(value) => setUserCodeAttempt(value)}
         />

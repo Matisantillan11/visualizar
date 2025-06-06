@@ -17,23 +17,34 @@ import { theme } from "@/constants";
 
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useRouter } from "expo-router";
 import React from "react";
-import useAuth from "./hooks/useAuth";
+import { useAuthContext } from "./hooks/useAuthContext";
 
 export default function Login() {
+  const router = useRouter();
+
   const { width, height } = useWindowDimensions();
-  const { isLoading, userEmailAttempt, setUserEmailAttempt, onSendEmailCode } =
-    useAuth();
+  const {
+    isLoading,
+    userEmailAttempt,
+    setUserEmailAttempt,
+    onSendEmailCode,
+    isAuthChecked,
+    isSignedIn,
+    isChecking,
+  } = useAuthContext();
 
-  /* useEffect(() => {
-    const validateOnboarding = async () => {
-      const onboarding = await getItem("onboarding");
-      if (!onboarding) {
-      }
-    };
+  /*  useEffect(
+    function redirectToAppStack() {
+      if (isAuthChecked && isSignedIn) router.push("/(app)");
+    },
+    [isAuthChecked, isSignedIn]
+  );
 
-    validateOnboarding();
-  }, []); */
+  if (isChecking) {
+    return <Loader />;
+  } */
 
   return (
     <Container>
@@ -69,9 +80,11 @@ export default function Login() {
           left={-width / 8}
           top={-30}
         />
+
         <Button onPress={onSendEmailCode} variant={ButtonVariants.solid}>
           {isLoading ? <Loader /> : "Ingresar"}
         </Button>
+
         <View style={styles.orContainer}>
           <View style={styles.line} />
           <ThemedText

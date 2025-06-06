@@ -9,17 +9,15 @@ import { EmailIllustration } from "@/components/UI/illustrations/email.illustati
 import { theme } from "@/constants";
 import { useRouter } from "expo-router";
 import React from "react";
-import { StyleSheet, View } from "react-native";
-import { getEmailClients, openInbox } from "react-native-email-link";
+import { Linking, StyleSheet, View } from "react-native";
 
+const GMAIL_URL = "googlegmail://";
 export default function CheckYourEmail() {
   const router = useRouter();
 
   const onOpenEmailApp = async () => {
-    const clients = await getEmailClients();
-    openInbox({
-      app: clients[0].id,
-    });
+    Linking.openURL(GMAIL_URL);
+    router.push("/(auth)/validate-code");
   };
 
   return (
@@ -34,10 +32,7 @@ export default function CheckYourEmail() {
       </ThemedText>
 
       <View style={styles.buttonsContainer}>
-        <Button
-          onPress={() => router.push("/(auth)/validate-code")}
-          variant={ButtonVariants.solid}
-        >
+        <Button onPress={onOpenEmailApp} variant={ButtonVariants.solid}>
           Continuar
         </Button>
       </View>

@@ -1,20 +1,29 @@
-import { OnboardingIllustration } from "@/components/UI";
-import { Text, View, useWindowDimensions } from "react-native";
+import { Loader, OnboardingIllustration } from "@/components/UI";
+import {
+  Text,
+  TouchableOpacity,
+  View,
+  useWindowDimensions,
+} from "react-native";
 
 import { BlurView } from "@/components/UI/blur-view/blur-view.component";
 import { theme } from "@/constants";
+import { useOnboarding } from "@/hooks/use-onboarding.hook";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { Link, useRouter } from "expo-router";
+import { Redirect, useRouter } from "expo-router";
 import React from "react";
 
 export default function Onboarding() {
   const { height } = useWindowDimensions();
   const router = useRouter();
-  /*  const { hasToShowOnboarding, isChecking } = useOnboarding();
 
-  if (isChecking || !hasToShowOnboarding) {
-    return <Loader />;
-  } */
+  const { hasToShowOnboarding, isChecking } = useOnboarding();
+
+  if (!hasToShowOnboarding) {
+    return <Redirect href={"/(auth)"} />;
+  }
+
+  if (isChecking) return <Loader />;
 
   return (
     <View
@@ -65,8 +74,8 @@ export default function Onboarding() {
             justifyContent: "center",
           }}
         >
-          <Link
-            href="/(auth)"
+          <TouchableOpacity
+            onPress={() => router.push("/(auth)")}
             style={{
               width: 45,
               height: 45,
@@ -99,7 +108,7 @@ export default function Onboarding() {
                 <AntDesign name="right" size={16} color="white" />
               </View>
             </View>
-          </Link>
+          </TouchableOpacity>
         </View>
       </View>
     </View>

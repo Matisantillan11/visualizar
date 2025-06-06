@@ -18,11 +18,13 @@ export const Input: FC<InputProps> = (props) => {
       ]}
     >
       {rightIcon && rightIcon}
+
       <TextInput
         style={[props.style, styles.input, customStyles?.input]}
         placeholderTextColor={theme.gray.gray400}
         {...restProps}
       />
+
       {leftIcon && leftIcon}
     </View>
   );

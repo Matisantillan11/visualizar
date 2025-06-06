@@ -8,7 +8,7 @@ export interface CardProps {
   isHorizontal: boolean;
   size?: SizeVariants;
 }
-export const Card = ({ isHorizontal }: CardProps) => {
+export default function Card({ isHorizontal }: CardProps) {
   const { width } = useWindowDimensions();
 
   return (
@@ -74,4 +74,4 @@ export const Card = ({ isHorizontal }: CardProps) => {
       </View>
     </View>
   );
-};
+}
