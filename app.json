@@ -33,8 +33,7 @@
           "backgroundColor": "#120842"
         }
       ],
-      "expo-font",
-      "expo-mail-composer"
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
