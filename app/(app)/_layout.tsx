@@ -10,8 +10,18 @@ export default function AppLayout() {
         header: (props) => <AppNavbar {...props} />,
       }}
     >
-      <Stack.Screen name="index" />
-      <Stack.Screen name="book" />
+      <Stack.Screen
+        name="index"
+        initialParams={{
+          canGoBack: () => false,
+        }}
+      />
+      <Stack.Screen
+        name="book"
+        initialParams={{
+          canGoBack: () => true,
+        }}
+      />
     </Stack>
   );
 }
