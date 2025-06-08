@@ -3,8 +3,9 @@ import { ROUTES } from "@/constants/routes/routes.constant";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
+import { TouchableOpacity } from "react-native";
 
-import { Appbar } from "react-native-paper";
+import { Appbar, Icon } from "react-native-paper";
 
 export const AppNavbar = (props: NativeStackHeaderProps) => {
   return (
@@ -12,19 +13,37 @@ export const AppNavbar = (props: NativeStackHeaderProps) => {
       {...props}
       style={{
         backgroundColor: theme.primary.brand800,
-        paddingHorizontal: 20,
+        paddingHorizontal: 40,
+        justifyContent: "space-between",
+        alignItems: "center",
       }}
     >
-      <Link href={ROUTES.HOME} />
-      <Image
-        source={require("../../assets/images/negative-horizontal-logo.png")}
-        style={{
-          width: "50%",
-          height: "100%",
-        }}
-        contentFit="fill"
-        transition={1000}
-      />
+      {props.navigation.canGoBack() ? (
+        <TouchableOpacity onPress={() => props.navigation.goBack()}>
+          <Icon size={40} source="chevron-left" color="white" />
+        </TouchableOpacity>
+      ) : (
+        <Link
+          href={ROUTES.HOME}
+          style={{
+            width: 150,
+            height: 50,
+            marginLeft: -15,
+          }}
+        >
+          <Image
+            source={require("../../assets/images/negative-horizontal-logo.png")}
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
+            contentFit="fill"
+            transition={1000}
+          />
+        </Link>
+      )}
+
+      <Icon size={35} source="account-circle" color="white" />
     </Appbar.Header>
   );
 };

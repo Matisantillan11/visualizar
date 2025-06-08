@@ -1,4 +1,5 @@
 import { VerticalLinearGradient } from "@/components/linear-gradient/linear-gradient.component";
+import { ThemedText, ThemedTextVariants } from "@/components/UI";
 import { BlurView } from "@/components/UI/blur-view/blur-view.component";
 import { theme } from "@/constants";
 import { ExpoWebGLRenderingContext, GLView } from "expo-gl";
@@ -25,7 +26,7 @@ export default function Book() {
     // Add a cube
     const geometry = new THREE.BoxGeometry(0.5, 0.75, 0.1);
     const materials = [
-      new THREE.MeshBasicMaterial({ color: "#FFFFFF" }), // right
+      new THREE.MeshBasicMaterial({ color: "#8B0000" }), // right
       new THREE.MeshBasicMaterial({ color: "#FFFFFF" }), // left
       new THREE.MeshBasicMaterial({ color: "#FFFFFF" }), // top
       new THREE.MeshBasicMaterial({ color: "#FFFFFF" }), // bottom
@@ -52,11 +53,25 @@ export default function Book() {
   return (
     <VerticalLinearGradient>
       <View style={{ flex: 1 }}>
+        <View
+          style={{
+            alignItems: "center",
+            marginVertical: 35,
+          }}
+        >
+          <ThemedText>The tiny dragon</ThemedText>
+          <ThemedText
+            variant={ThemedTextVariants.default}
+            style={{ fontSize: 16 }}
+          >
+            Rupert Carter
+          </ThemedText>
+        </View>
         <BlurView
           color={theme.primary.brand300}
           intensity={90}
           size={450}
-          top={20}
+          top={75}
           left={-25}
         />
         <GLView

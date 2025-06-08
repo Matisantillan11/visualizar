@@ -18,7 +18,7 @@ export const AuthNavbar = (props: NativeStackHeaderProps) => {
       >
         {props.navigation.canGoBack() && (
           <Appbar.Action
-            icon={"arrow-left"}
+            icon={"chevron-back"}
             onPress={() => props.navigation.goBack()}
           />
         )}
