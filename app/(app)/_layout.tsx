@@ -27,6 +27,9 @@ export default function AppLayout() {
         initialParams={{
           canGoBack: () => true,
         }}
+        options={{
+          headerShown: false,
+        }}
       />
     </Stack>
   );
