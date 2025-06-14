@@ -1,10 +1,12 @@
 import { Button } from "@/components/UI";
+import { Asset } from "expo-asset";
 import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import { ExpoWebGLRenderingContext, GLView } from "expo-gl";
 import { Renderer } from "expo-three";
 import { useRef, useState } from "react";
 import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 export default function BookCameraView() {
   const { height } = useWindowDimensions();
@@ -29,10 +31,6 @@ export default function BookCameraView() {
     );
   }
 
-  function toggleCameraFacing() {
-    setFacing((current) => (current === "back" ? "front" : "back"));
-  }
-
   const onContextCreate = async (gl: ExpoWebGLRenderingContext) => {
     const { drawingBufferWidth: width, drawingBufferHeight: height } = gl;
 
@@ -46,29 +44,46 @@ export default function BookCameraView() {
     const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
     camera.position.z = 2;
 
-    // Add a cube
-    const geometry = new THREE.BoxGeometry(0.65, 1, 0.1);
-    const materials = [
-      new THREE.MeshBasicMaterial({ color: "#8B0000" }), // right
-      new THREE.MeshBasicMaterial({ color: "#FFFFFF" }), // left
-      new THREE.MeshBasicMaterial({ color: "#FFFFFF" }), // top
-      new THREE.MeshBasicMaterial({ color: "#FFFFFF" }), // bottom
-      new THREE.MeshBasicMaterial({ color: "#8B0000" }), // front
-      new THREE.MeshBasicMaterial({ color: "#8B0000" }), // back (lomo)
-    ];
-    const book = new THREE.Mesh(geometry, materials);
-    book.position.y = 0;
-    scene.add(book);
+    // Add light
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(0, 1, 1).normalize();
+    scene.add(light);
 
-    renderer.render(scene, camera);
-    // Animation loop
+    // Load the OBJ model
+    let loadedObject: THREE.Object3D | null = null;
+    const loader = new GLTFLoader();
+
+    const asset = await Asset.fromModule(
+      require("../../../assets/example.glb")
+    ).downloadAsync();
+
+    loader.load(
+      asset.uri,
+      (gltf: any) => {
+        loadedObject = gltf.scene as THREE.Object3D<THREE.Object3DEventMap>; // GLTFLoader returns a GLTF object, gltf.scene contains the 3D model
+        loadedObject.scale.set(0.65, 1, 0.1); // Adjust scale as needed
+        loadedObject.position.y = 0; // Position the model
+        scene.add(loadedObject); // Add the model to the scene
+      },
+      (xhr: any) => {
+        // Optional: Progress callback
+        console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+      },
+      (error: any) => {
+        // Error callback
+        console.error("An error happened while loading the GLB model:", error);
+      }
+    );
+
     const animate = () => {
       requestRef.current = requestAnimationFrame(animate);
 
-      book.rotation.y += 0.01;
-
-      renderer.render(scene, camera);
-      gl.endFrameEXP(); // Required by expo-gl
+      if (loadedObject) {
+        loadedObject.scale.setScalar(1 + 0.1 * Math.sin(Date.now() * 0.001));
+        loadedObject.rotateY(0.01);
+        renderer.render(scene, camera);
+        gl.endFrameEXP();
+      }
     };
 
     animate();
