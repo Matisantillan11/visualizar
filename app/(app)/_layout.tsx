@@ -22,6 +22,12 @@ export default function AppLayout() {
           canGoBack: () => true,
         }}
       />
+      <Stack.Screen
+        name="book/camera"
+        initialParams={{
+          canGoBack: () => true,
+        }}
+      />
     </Stack>
   );
 }
