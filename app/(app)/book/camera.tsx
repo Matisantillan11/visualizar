@@ -4,7 +4,13 @@ import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import { ExpoWebGLRenderingContext, GLView } from "expo-gl";
 import { Renderer } from "expo-three";
 import { useRef, useState } from "react";
-import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import {
   Gesture,
   GestureDetector,
@@ -13,11 +19,13 @@ import {
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
+import { theme } from "@/constants";
 import { useSharedValue } from "react-native-reanimated";
 
 export default function BookCameraView() {
   const { height } = useWindowDimensions();
   const requestRef = useRef<number>(0);
+  const [isLoading, setIsLoading] = useState(true);
   const [facing, setFacing] = useState<CameraType>("back");
   const [permission, requestPermission] = useCameraPermissions();
 
@@ -81,7 +89,7 @@ export default function BookCameraView() {
         if (modelRef.current) {
           // Initial scale and position
           modelRef.current.scale.set(0.65, 1, 0.1); // Adjust initial scale as needed
-          modelRef.current.position.y = 0; // Adjust initial position as needed
+          modelRef.current.position.y = 0.45; // Adjust initial position as needed
           scene.add(modelRef.current);
           console.log("GLB model loaded successfully from ArrayBuffer!");
         }
@@ -111,6 +119,8 @@ export default function BookCameraView() {
     animate();
   };
 
+  console.log({ isLoading });
+
   const panGesture = Gesture.Pan()
     .onUpdate((event) => {
       // Update rotation based on pan gesture translation
@@ -139,17 +149,29 @@ export default function BookCameraView() {
 
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing={facing}>
-        <GestureHandlerRootView>
-          <GestureDetector gesture={composedGesture}>
-            <GLView
-              style={{
-                height,
-              }}
-              onContextCreate={onContextCreate}
-            />
-          </GestureDetector>
-        </GestureHandlerRootView>
+      <CameraView
+        style={styles.camera}
+        facing={facing}
+        onCameraReady={() => setIsLoading(false)}
+      >
+        {isLoading ? (
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <ActivityIndicator size="large" color={theme.primary.brand800} />
+          </View>
+        ) : (
+          <GestureHandlerRootView>
+            <GestureDetector gesture={composedGesture}>
+              <GLView
+                style={{
+                  height,
+                }}
+                onContextCreate={onContextCreate}
+              />
+            </GestureDetector>
+          </GestureHandlerRootView>
+        )}
       </CameraView>
     </View>
   );

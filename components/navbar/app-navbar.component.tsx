@@ -43,7 +43,9 @@ export const AppNavbar = (props: NativeStackHeaderProps) => {
         </Link>
       )}
 
-      <Icon size={35} source="account-circle" color="white" />
+      {props.route.name === "book/camera" ? null : (
+        <Icon size={35} source="account-circle" color="white" />
+      )}
     </Appbar.Header>
   );
 };
