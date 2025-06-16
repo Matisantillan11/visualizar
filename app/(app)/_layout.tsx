@@ -26,9 +26,7 @@ export default function AppLayout() {
         name="book/camera"
         initialParams={{
           canGoBack: () => true,
-        }}
-        options={{
-          headerShown: false,
+          gestureEnabled: true,
         }}
       />
     </Stack>
