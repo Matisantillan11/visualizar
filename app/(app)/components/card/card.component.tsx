@@ -1,19 +1,25 @@
 import { Button, ThemedText, ThemedTextVariants } from "@/components/UI";
 import { theme } from "@/constants";
+import { BASE_URL } from "@/lib/fetcher/constants";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { TouchableOpacity, useWindowDimensions, View } from "react-native";
+import { Book } from "../../book/types/book";
 import { SizeVariants } from "../../interfaces";
 
 export interface CardProps {
   isHorizontal: boolean;
+  book: Book;
   size?: SizeVariants;
 }
-export default function Card({ isHorizontal }: CardProps) {
+export default function Card({ isHorizontal, book }: CardProps) {
   const { width } = useWindowDimensions();
   const router = useRouter();
+
   return (
-    <TouchableOpacity onPress={() => router.push("/(app)/book")}>
+    <TouchableOpacity
+      onPress={() => router.push(`/(app)/book/${book.documentId}`)}
+    >
       <View
         style={{
           width: isHorizontal ? 150 : width,
@@ -29,9 +35,13 @@ export default function Card({ isHorizontal }: CardProps) {
             height: 250,
           }}
           contentFit="cover"
-          source="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoKGktM4wNk7zxIoOJHs4djt9VLFd-005fFQ&s"
+          source={`${BASE_URL}${book.image.url}`}
         />
-        <View style={{ alignContent: "center", marginVertical: 8 }}>
+        <View
+          style={{
+            marginVertical: 8,
+          }}
+        >
           <ThemedText
             variant={ThemedTextVariants.default}
             style={{
@@ -40,7 +50,7 @@ export default function Card({ isHorizontal }: CardProps) {
               fontWeight: "bold",
             }}
           >
-            The tiny dragon
+            {book.name}
           </ThemedText>
           <ThemedText
             variant={ThemedTextVariants.default}
@@ -49,7 +59,7 @@ export default function Card({ isHorizontal }: CardProps) {
               color: theme.primary.brand50,
             }}
           >
-            Rupert Carter
+            {book.author_id.name}
           </ThemedText>
 
           {!isHorizontal ? (
@@ -63,8 +73,7 @@ export default function Card({ isHorizontal }: CardProps) {
                 maxWidth: 150,
               }}
             >
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's...
+              {book.description.slice(0, 150)}...
             </ThemedText>
           ) : null}
 

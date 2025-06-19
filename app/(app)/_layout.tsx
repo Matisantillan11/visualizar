@@ -1,5 +1,3 @@
-import "react-native-reanimated";
-
 import { AppNavbar } from "@/components/navbar/app-navbar.component";
 import { Stack } from "expo-router";
 
@@ -17,7 +15,7 @@ export default function AppLayout() {
         }}
       />
       <Stack.Screen
-        name="book"
+        name="book/[id]"
         initialParams={{
           canGoBack: () => true,
         }}

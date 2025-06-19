@@ -119,8 +119,6 @@ export default function BookCameraView() {
     animate();
   };
 
-  console.log({ isLoading });
-
   const panGesture = Gesture.Pan()
     .onUpdate((event) => {
       // Update rotation based on pan gesture translation
