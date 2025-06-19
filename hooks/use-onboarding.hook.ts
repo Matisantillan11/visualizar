@@ -4,7 +4,7 @@ import { useStorage } from "./use-storage.hook";
 
 export const useOnboarding = () => {
   const [isChecking, setIsChecking] = useState(true);
-  const [hasToShowOnboarding, setHasToShowOnboarding] = useState(false);
+  const [hasToShowOnboarding, setHasToShowOnboarding] = useState(true);
 
   const { getItem } = useStorage();
 

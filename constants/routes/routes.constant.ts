@@ -17,6 +17,6 @@ export const ROUTES: Record<RouteNames, RelativePathString> = {
   FORGOT_PASSWORD: "/forgot-password" as string as RelativePathString,
   VALIDATE_CODE: "/validate-code" as string as RelativePathString,
   NOT_FOUND: "+not-found" as string as RelativePathString,
-  HOME: "(app)" as string as RelativePathString,
+  HOME: "/(app)" as string as RelativePathString,
   BOOK: "/book" as string as RelativePathString,
 };
