@@ -12,8 +12,8 @@ export const useOnboarding = () => {
     try {
       const onboarding = await getItem("onboarding");
 
-      if (!onboarding) {
-        setHasToShowOnboarding(true);
+      if (onboarding) {
+        setHasToShowOnboarding(false);
       }
     } catch (error) {
       console.log("error checking onboarding", error);

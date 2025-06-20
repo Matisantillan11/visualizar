@@ -1,6 +1,5 @@
 import { useStorage } from "@/hooks";
 import { useAuth, useSignIn } from "@clerk/clerk-expo";
-import { SignInFirstFactor } from "@clerk/types";
 import { useRouter } from "expo-router";
 import {
   createContext,
@@ -44,7 +43,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const { isSignedIn, isLoaded: isClerkAuthLoaded } = useAuth();
   const { isLoaded, signIn, setActive } = useSignIn();
 
-  const isEmailCodeFactor = (factor: SignInFirstFactor) => {
+  const isEmailCodeFactor = (factor: any) => {
     return factor.strategy === "email_code";
   };
 
@@ -61,7 +60,9 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
           identifier: userEmailAttempt,
         });
 
-        const emailCodeFactor = supportedFirstFactors?.find(isEmailCodeFactor);
+        const emailCodeFactor = supportedFirstFactors?.find(
+          isEmailCodeFactor
+        ) as any;
 
         if (emailCodeFactor) {
           const { emailAddressId } = emailCodeFactor;
@@ -90,7 +91,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
           code: userCodeAttempt.toString() as string,
         });
 
-        if (signInAttempt.status === "complete") {
+        if (signInAttempt && signInAttempt.status === "complete") {
+          console.log({ id: signInAttempt.createdSessionId });
           await setActive({ session: signInAttempt.createdSessionId });
           await disableOnboardingPage();
           router.push("/(app)");
