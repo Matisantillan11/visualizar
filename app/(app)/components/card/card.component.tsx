@@ -12,6 +12,7 @@ export interface CardProps {
   book: Book;
   size?: SizeVariants;
 }
+  
 export default function Card({ isHorizontal, book }: CardProps) {
   const { width } = useWindowDimensions();
   const router = useRouter();
