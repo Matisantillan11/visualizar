@@ -1,2 +1,1 @@
-export * from './confirm-email-modal'
-export * from './validate-code-input'
+export * from "./validate-code-input";

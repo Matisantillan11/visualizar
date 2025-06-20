@@ -34,7 +34,7 @@
         }
       ],
       "expo-font",
-      "expo-mail-composer"
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true

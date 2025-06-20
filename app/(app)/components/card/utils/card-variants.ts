@@ -1,4 +1,4 @@
-import { SizeVariants } from "@/app/(app)/interfaces";
+import { SizeVariants } from "@/app/home/interfaces";
 
 const sizeVariants = {
   sm: {

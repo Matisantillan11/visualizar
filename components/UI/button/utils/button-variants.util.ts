@@ -6,7 +6,7 @@ const variants = {
     backgroundColor: theme.primary.brand800,
   },
   outlined: {
-    backgroundColor: theme.base.white,
+    backgroundColor: "transparent",
     borderWidth: 1,
     borderColor: theme.primary.brand800,
     borderStyle: "solid",
@@ -18,7 +18,7 @@ const textVariants = {
     color: theme.base.white,
   },
   outlined: {
-    color: theme.primary.brand800,
+    color: theme.base.white,
   },
 };
 
