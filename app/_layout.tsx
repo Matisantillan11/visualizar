@@ -61,22 +61,10 @@ export default function RootLayout() {
   );
 }
 
-{
-  /* <Stack
-  screenOptions={{
-    header: (props) => <AuthNavbar {...props} />,
-  }}
->
-  <Stack.Screen name="index" />
-  <Stack.Screen name="(auth)" />
-</Stack> */
-}
-
 function RouterRedirector() {
   const { isSignedIn, isAuthChecked, isUserSignedin, isChecking } = useAuthContext();
   const router = useRouter();
 
-  console.log({ isAuthChecked, isChecking, isUserSignedin });
   useEffect(() => {
     if (isChecking) return;
     if (!isUserSignedin) {
