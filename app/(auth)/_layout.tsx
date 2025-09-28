@@ -21,7 +21,6 @@ export default function AuthLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="check-your-email" />
       <Stack.Screen name="validate-code" />
-      <Stack.Screen name="(app)" />
     </Stack>
   );
 }

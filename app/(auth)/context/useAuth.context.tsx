@@ -1,5 +1,6 @@
 import { useStorage } from "@/hooks";
-import { useAuth, useSignIn } from "@clerk/clerk-expo";
+import { useAuth, useSignIn, useUser } from "@clerk/clerk-expo";
+import { SignInFactor } from "@clerk/types";
 import { useRouter } from "expo-router";
 import {
   createContext,
@@ -15,12 +16,19 @@ type AuthStateContextProps = {
   userCodeAttempt: string | undefined;
   setUserCodeAttempt: Dispatch<string | undefined>;
   isChecking: boolean;
+  isUserSignedin: boolean | undefined;
   isAuthChecked: boolean;
   isLoading: boolean;
   isSignedIn: boolean | undefined;
+  handleSignOut: () => void;
+  getUserData: () =>
+    | {
+        name: string | null | undefined;
+        avatar: string | undefined;
+      }
+    | undefined;
 
   onSendEmailCode: () => Promise<void>;
-
   onValidateCode: () => Promise<void>;
 };
 
@@ -40,10 +48,18 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const { storeItem } = useStorage();
-  const { isSignedIn, isLoaded: isClerkAuthLoaded } = useAuth();
+  const {
+    user,
+    isLoaded: isUserDataLoaded,
+    isSignedIn: isUserSignedin,
+  } = useUser();
+
+  console.log({ isUserDataLoaded, isUserSignedin });
+
+  const { isSignedIn, isLoaded: isClerkAuthLoaded, signOut } = useAuth();
   const { isLoaded, signIn, setActive } = useSignIn();
 
-  const isEmailCodeFactor = (factor: any) => {
+  const isEmailCodeFactor = (factor: SignInFactor) => {
     return factor.strategy === "email_code";
   };
 
@@ -60,9 +76,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
           identifier: userEmailAttempt,
         });
 
-        const emailCodeFactor = supportedFirstFactors?.find(
-          isEmailCodeFactor
-        ) as any;
+        const emailCodeFactor = supportedFirstFactors?.find(isEmailCodeFactor);
 
         if (emailCodeFactor) {
           const { emailAddressId } = emailCodeFactor;
@@ -107,6 +121,21 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
+  const getUserData = () => {
+    if (isUserDataLoaded && isUserSignedin) {
+      return {
+        name: user?.fullName,
+        avatar: user?.imageUrl,
+      };
+    }
+
+    return undefined;
+  };
+
   return (
     <AuthStateContext.Provider
       value={{
@@ -119,8 +148,10 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         onSendEmailCode,
         onValidateCode,
         isChecking: !isClerkAuthLoaded,
-
         isSignedIn,
+        handleSignOut,
+        getUserData,
+        isUserSignedin,
       }}
     >
       {children}
