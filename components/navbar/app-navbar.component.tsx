@@ -1,13 +1,19 @@
 import { theme } from "@/constants";
 import { ROUTES } from "@/constants/routes/routes.constant";
+
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { Image } from "expo-image";
 import { Link } from "expo-router";
 import { TouchableOpacity } from "react-native";
-
 import { Appbar, Icon } from "react-native-paper";
 
-export const AppNavbar = (props: NativeStackHeaderProps) => {
+type AppNavbarProps = NativeStackHeaderProps & {
+  handlePresentModalPress: () => void;
+};
+
+export const AppNavbar = (props: AppNavbarProps) => {
+  const { handlePresentModalPress } = props;
+
   return (
     <Appbar.Header
       {...props}
@@ -44,7 +50,9 @@ export const AppNavbar = (props: NativeStackHeaderProps) => {
       )}
 
       {props.route.name === "book/camera" ? null : (
-        <Icon size={35} source="account-circle" color="white" />
+        <TouchableOpacity onPress={handlePresentModalPress}>
+          <Icon size={35} source="account-circle" color="white" />
+        </TouchableOpacity>
       )}
     </Appbar.Header>
   );
