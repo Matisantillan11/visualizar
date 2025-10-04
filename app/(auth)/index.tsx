@@ -18,39 +18,30 @@ import { theme } from "@/constants";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
-import React from "react";
-import { useAuthContext } from "./hooks/useAuthContext";
+import React, { useEffect } from 'react';
+import { useAuthContext } from './hooks/useAuthContext';
 
 export default function Login() {
   const router = useRouter();
 
   const { width, height } = useWindowDimensions();
-  const {
-    isLoading,
-    userEmailAttempt,
-    setUserEmailAttempt,
-    onSendEmailCode,
-    isAuthChecked,
-    isSignedIn,
-    isChecking,
-  } = useAuthContext();
+  const { isLoading, userEmailAttempt, setUserEmailAttempt, onSendEmailCode, user } =
+    useAuthContext();
 
-  /*  useEffect(
+  useEffect(
     function redirectToAppStack() {
-      if (isAuthChecked && isSignedIn) router.push("/(app)");
+      if (user && user.email) router.push('/(app)');
     },
-    [isAuthChecked, isSignedIn]
+    [user]
   );
 
-  if (isChecking) {
+  if (isLoading) {
     return <Loader />;
-  } */
+  }
 
   return (
     <Container>
-      <View
-        style={[styles.illustrationsContainer, { width, height: height / 3 }]}
-      >
+      <View style={[styles.illustrationsContainer, { width, height: height / 3 }]}>
         <Ed />
         <Kim />
         <Justin />
@@ -61,12 +52,7 @@ export default function Login() {
         <Input
           placeholder="Correo electrónico"
           rightIcon={
-            <Ionicons
-              name="at"
-              size={16}
-              color={theme.gray.gray400}
-              style={styles.iconRight}
-            />
+            <Ionicons name="at" size={16} color={theme.gray.gray400} style={styles.iconRight} />
           }
           value={userEmailAttempt}
           onChangeText={(value: string) => setUserEmailAttempt(value)}
@@ -80,17 +66,14 @@ export default function Login() {
           left={-width / 8}
           top={-30}
         />
-        
+
         <Button onPress={onSendEmailCode} variant={ButtonVariants.solid}>
-          {isLoading ? <Loader /> : "Ingresar"}
+          {isLoading ? <Loader /> : 'Ingresar'}
         </Button>
 
         <View style={styles.orContainer}>
           <View style={styles.line} />
-          <ThemedText
-            variant={ThemedTextVariants.default}
-            style={styles.orText}
-          >
+          <ThemedText variant={ThemedTextVariants.default} style={styles.orText}>
             O
           </ThemedText>
           <View style={styles.line} />
@@ -98,17 +81,12 @@ export default function Login() {
 
         <Button
           variant={ButtonVariants.outlined}
-          style={{ flexDirection: "row" }}
+          style={{ flexDirection: 'row' }}
           leftIcon={
             <View style={{ paddingHorizontal: 8 }}>
-              <AntDesign
-                name="google"
-                size={20}
-                color={theme.primary.brand800}
-              />
+              <AntDesign name="google" size={20} color={theme.primary.brand800} />
             </View>
-          }
-        >
+          }>
           Ingresa con google
         </Button>
       </View>

@@ -1,19 +1,16 @@
 import "react-native-reanimated";
 
-import { ClerkProvider } from "@clerk/clerk-expo";
-import { tokenCache } from "@clerk/clerk-expo/token-cache";
+import { ThemeProvider } from '@react-navigation/native';
+import * as SplashScreen from 'expo-splash-screen';
 
-import { ThemeProvider } from "@react-navigation/native";
-import * as SplashScreen from "expo-splash-screen";
-
-import { Loader } from "@/components/UI";
-import { theme } from "@/constants";
-import { useFonts } from "expo-font";
+import { Loader } from '@/components/UI';
+import { theme } from '@/constants';
+import { useFonts } from 'expo-font';
 import { Slot, useRouter } from 'expo-router';
-import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
+import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 import { View } from 'react-native';
-import { AuthContextProvider } from "./(auth)/context/useAuth.context";
+import { AuthContextProvider } from './(auth)/context/useAuth.context';
 import { useAuthContext } from './(auth)/hooks/useAuthContext';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -51,30 +48,28 @@ export default function RootLayout() {
           heavy: 'SpaceMono-Bold' as unknown as any,
         },
       }}>
-      <ClerkProvider tokenCache={tokenCache}>
-        <AuthContextProvider>
-          <RouterRedirector />
-          <StatusBar style="light" />
-        </AuthContextProvider>
-      </ClerkProvider>
+      <AuthContextProvider>
+        <RouterRedirector />
+        <StatusBar style="light" />
+      </AuthContextProvider>
     </ThemeProvider>
   );
 }
 
 function RouterRedirector() {
-  const { isSignedIn, isAuthChecked, isUserSignedin, isChecking } = useAuthContext();
+  const { user, isLoading } = useAuthContext();
   const router = useRouter();
 
   useEffect(() => {
-    if (isChecking) return;
-    if (!isUserSignedin) {
+    if (isLoading) return;
+    if (!user) {
       router.replace('/(auth)');
     } else {
       router.replace('/(app)');
     }
-  }, [isUserSignedin, isChecking]);
+  }, [user, isLoading]);
 
-  if (isChecking) {
+  if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Loader />
