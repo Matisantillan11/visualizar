@@ -18,7 +18,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import { Book, BookResponse } from "../types/book";
+import { Book } from '../types/book';
 
 export default function BookDetail() {
   const { id } = useLocalSearchParams();
@@ -27,17 +27,17 @@ export default function BookDetail() {
 
   const [book, setBook] = useState<Book | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const bookUrl = `/api/books/${id}?populate[author_id][fields][0]=name`;
+  const bookUrl = `/books/${id}`;
 
   useEffect(() => {
     const fetchBook = async () => {
       if (id) {
-        const response = await fetcher<BookResponse>({
+        const response = await fetcher<Book>({
           url: bookUrl,
         });
 
-        if (response && response.data) {
-          setBook(response.data);
+        if (response) {
+          setBook(response);
           setIsLoading(false);
         }
       }
@@ -64,12 +64,12 @@ export default function BookDetail() {
     // Add a cube
     const geometry = new THREE.BoxGeometry(0.65, 1, 0.1);
     const materials = [
-      new THREE.MeshBasicMaterial({ color: "#8B0000" }), // right
-      new THREE.MeshBasicMaterial({ color: "#FFFFFF" }), // left
-      new THREE.MeshBasicMaterial({ color: "#FFFFFF" }), // top
-      new THREE.MeshBasicMaterial({ color: "#FFFFFF" }), // bottom
-      new THREE.MeshBasicMaterial({ color: "#8B0000" }), // front
-      new THREE.MeshBasicMaterial({ color: "#8B0000" }), // back (lomo)
+      new THREE.MeshBasicMaterial({ color: '#8B0000' }), // right
+      new THREE.MeshBasicMaterial({ color: '#FFFFFF' }), // left
+      new THREE.MeshBasicMaterial({ color: '#FFFFFF' }), // top
+      new THREE.MeshBasicMaterial({ color: '#FFFFFF' }), // bottom
+      new THREE.MeshBasicMaterial({ color: '#8B0000' }), // front
+      new THREE.MeshBasicMaterial({ color: '#8B0000' }), // back (lomo)
     ];
     const book = new THREE.Mesh(geometry, materials);
     book.position.y = 0.65;
@@ -97,16 +97,12 @@ export default function BookDetail() {
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             <View
               style={{
-                alignItems: "center",
+                alignItems: 'center',
                 marginVertical: 35,
-              }}
-            >
+              }}>
               <ThemedText>{book?.name}</ThemedText>
-              <ThemedText
-                variant={ThemedTextVariants.default}
-                style={{ fontSize: 16 }}
-              >
-                {book?.author_id?.name}
+              <ThemedText variant={ThemedTextVariants.default} style={{ fontSize: 16 }}>
+                {book?.bookAuthor[0].author.name}
               </ThemedText>
             </View>
 
@@ -129,27 +125,19 @@ export default function BookDetail() {
               style={{
                 marginTop: -225,
                 paddingHorizontal: 32,
-              }}
-            >
+              }}>
               {book?.description?.slice(0, 300)}...
             </ThemedText>
             <View
               style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
+                flexDirection: 'row',
+                justifyContent: 'space-between',
                 padding: 32,
-              }}
-            >
-              <Button
-                style={{ width: width / 2.5 }}
-                onPress={() => router.push("/book/camera")}
-              >
+              }}>
+              <Button style={{ width: width / 2.5 }} onPress={() => router.push('/book/camera')}>
                 Ver animaciones
               </Button>
-              <Button
-                variant={ButtonVariants.outlined}
-                style={{ width: width / 2.5 }}
-              >
+              <Button variant={ButtonVariants.outlined} style={{ width: width / 2.5 }}>
                 Calificar libro
               </Button>
             </View>
