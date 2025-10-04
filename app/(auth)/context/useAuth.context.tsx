@@ -68,7 +68,9 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const onSendEmailCode = async () => {
-    if (isLoaded && signIn && userEmailAttempt) {
+    router.push('/(auth)/check-your-email');
+
+    /* if (isLoaded && signIn && userEmailAttempt) {
       setIsLoading(true);
 
       try {
@@ -93,11 +95,12 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       } finally {
         setIsLoading(false);
       }
-    }
+    } */
   };
 
   const onValidateCode = async () => {
-    if (isLoaded && signIn && userCodeAttempt) {
+    router.push('/(app)');
+    /*  if (isLoaded && signIn && userCodeAttempt) {
       setIsLoading(true);
       try {
         const signInAttempt = await signIn.attemptFirstFactor({
@@ -118,7 +121,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       } finally {
         setIsLoading(false);
       }
-    }
+    } */
   };
 
   const handleSignOut = async () => {

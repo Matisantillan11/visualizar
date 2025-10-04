@@ -1,6 +1,5 @@
 import { Button, ThemedText, ThemedTextVariants } from "@/components/UI";
 import { theme } from "@/constants";
-import { BASE_URL } from "@/lib/fetcher/constants";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { TouchableOpacity, useWindowDimensions, View } from "react-native";
@@ -12,14 +11,13 @@ export interface CardProps {
   book: Book;
   size?: SizeVariants;
 }
+
 export default function Card({ isHorizontal, book }: CardProps) {
   const { width } = useWindowDimensions();
   const router = useRouter();
 
   return (
-    <TouchableOpacity
-      onPress={() => router.push(`/(app)/book/${book.documentId}`)}
-    >
+    <TouchableOpacity onPress={() => router.push(`/(app)/book/${book.id}`)}>
       <View
         style={{
           width: isHorizontal ? 150 : width,
@@ -35,7 +33,7 @@ export default function Card({ isHorizontal, book }: CardProps) {
             height: 250,
           }}
           contentFit="cover"
-          source={`${BASE_URL}${book.image.url}`}
+          source={book.imageUrl}
         />
         <View
           style={{
@@ -59,7 +57,7 @@ export default function Card({ isHorizontal, book }: CardProps) {
               color: theme.primary.brand50,
             }}
           >
-            {book.author_id.name}
+            {book?.bookAuthor[0].author.name}
           </ThemedText>
 
           {!isHorizontal ? (

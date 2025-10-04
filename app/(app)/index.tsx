@@ -4,7 +4,7 @@ import { fetcher } from "@/lib/fetcher";
 import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
-import { Book, BooksResponse } from "./book/types/book";
+import { Book } from './book/types/book';
 import CardAligmentButton from "./components/card-aligment-button/card-aligment-button.component";
 import Card from "./components/card/card.component";
 import useBooksAligment, { BooksAligment } from "./hooks/use-books-aligment";
@@ -15,22 +15,28 @@ export default function app() {
 
   const [books, setBook] = useState<Array<Book> | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const booksUrl = `/api/books?populate[author_id][fields][0]=name&populate[image][fields][0]=url`;
+  const booksUrl = `/books`;
 
   useEffect(() => {
     const fetchBook = async () => {
-      const response = await fetcher<BooksResponse>({
-        url: booksUrl,
-      });
+      try {
+        const response = await fetcher<Book[]>({
+          url: booksUrl,
+        });
 
-      if (response && response.data) {
-        setBook(response.data);
+        if (response) {
+          setBook(response);
+        }
+      } catch (error) {
+        console.log({ error });
+      } finally {
         setIsLoading(false);
       }
     };
 
     fetchBook();
   }, []);
+
 
   return (
     <Container gradient withNavbar>

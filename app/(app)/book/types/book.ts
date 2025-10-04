@@ -4,27 +4,38 @@ export interface Author {
   name: string;
 }
 
-export interface Image {
-  id: number;
-  documentId: string;
-  url: string;
-}
+
 
 export interface Book {
-  id: number;
-  documentId: string;
+  id: string;
   name: string;
   description: string;
-  createdAt: Date;
-  updatedAt: Date;
-  publishedAt: Date;
-  author_id: Author;
-  image: Image;
+  animationFolderName: string;
+  imageUrl: string;
+  is3dEnabled: boolean;
+  releaseDate: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  bookAuthor: BookAuthor[];
+  bookCategory: BookCategory[];
+  bookCourse: BookCourse[];
 }
 
-export interface BooksResponse {
-  data: Book[];
-  pagination: any;
+export interface BookAuthor {
+  authorId: string;
+  bookId: string;
+  author: Author;
+}
+
+export interface BookCategory {
+  bookId: string;
+  categoryId: string;
+}
+
+export interface BookCourse {
+  bookId: string;
+  courseId: string;
 }
 
 export interface BookResponse {
