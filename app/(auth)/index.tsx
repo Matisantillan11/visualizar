@@ -18,7 +18,7 @@ import { theme } from "@/constants";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { useAuthContext } from "./hooks/useAuthContext";
 
 export default function Login() {
@@ -30,21 +30,19 @@ export default function Login() {
     userEmailAttempt,
     setUserEmailAttempt,
     onSendEmailCode,
-    isAuthChecked,
-    isSignedIn,
-    isChecking,
+    user,
   } = useAuthContext();
 
-  /*  useEffect(
+  useEffect(
     function redirectToAppStack() {
-      if (isAuthChecked && isSignedIn) router.push("/(app)");
+      if (user && user.email) router.push("/(app)");
     },
-    [isAuthChecked, isSignedIn]
+    [user]
   );
 
-  if (isChecking) {
+  if (isLoading) {
     return <Loader />;
-  } */
+  }
 
   return (
     <Container>

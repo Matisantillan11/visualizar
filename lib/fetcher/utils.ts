@@ -1,4 +1,5 @@
-import { FetchResponseTypes } from "./types";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FetchResponseTypes } from './types';
 
 export async function getHeaders({
   isExternalApi,
@@ -9,8 +10,7 @@ export async function getHeaders({
   withAuthentication: boolean;
   init?: RequestInit | undefined;
 }) {
-  const authorization =
-    !isExternalApi && withAuthentication ? await _getAuthorizationHeader() : {};
+  const authorization = !isExternalApi && withAuthentication ? await _getAuthorizationHeader() : {};
 
   const headers = {
     ...init?.headers,
@@ -21,7 +21,7 @@ export async function getHeaders({
 }
 
 export function isObject(data: unknown): data is object {
-  return typeof data === "object" && data !== null;
+  return typeof data === 'object' && data !== null;
 }
 
 // Helper function to parse response based on the responseType
@@ -37,9 +37,7 @@ export async function handleResponse<T>(
 
     return responseData as T;
   } else {
-    throw new Error(
-      `Request failed with status ${response.status}: ${response.statusText}`
-    );
+    throw new Error(`Request failed with status ${response.status}: ${response.statusText}`);
   }
 }
 
@@ -47,13 +45,14 @@ export async function handleResponse<T>(
 
 async function _getAuthorizationHeader() {
   try {
-    const token = process.env.EXPO_PUBLIC_TOKEN;
-    /* const session = await getCurrentSessionTokensClientSide();
-    token = session?.idToken?.toString() || ""; */
+    const storedSession = await AsyncStorage.getItem('session');
+    const session = JSON.parse(storedSession as string);
+    const token = session?.token;
+
     return { Authorization: `Bearer ${token}` };
   } catch (error) {
     console.error({ error: `Failed to retrieve token: ${error}` });
-    throw new Error("Authentication failed");
+    throw new Error('Authentication failed');
   }
 }
 
