@@ -49,7 +49,7 @@ export const useStorage = () => {
           await AsyncStorage.removeItem(k);
         });
       } else {
-        await AsyncStorage.removeItem("@MyApp_key");
+        await AsyncStorage.removeItem(key);
       }
     } catch (e) {
       console.log("error removing item", e);

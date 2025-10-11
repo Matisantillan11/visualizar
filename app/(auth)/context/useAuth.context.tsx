@@ -60,6 +60,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
   const removeSession = async () => {
     await removeItem('session');
+    await removeItem('user');
   };
 
   const onSendEmailCode = async () => {
@@ -104,6 +105,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       if (response && response.access_token && response.user) {
         const authUser: AuthUser = {
           id: response.user.id,
+          teacherId: response.user.teacherId,
+          studentId: response.user.studentId,
           name: response.user.name ?? '',
           role: response.user.role,
           email: response.user.email,
@@ -134,6 +137,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
   const handleSignOut = async () => {
     await removeSession();
+    setSession(undefined);
+    setUser(undefined);
     router.push('/(auth)');
   };
 
@@ -147,8 +152,16 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         setIsLoading(true);
         const session = await getSession();
         const user = await getUser();
-        setSession(session as AuthSession);
-        setUser(user as AuthUser);
+
+        console.log({ session, user });
+        if (session && user) {
+          setSession(session as AuthSession);
+          setUser(user as AuthUser);
+        } else {
+          setSession(undefined);
+          setUser(undefined);
+          router.push('/(auth)');
+        }
       } catch (error) {
         console.error('Error getting session and user:', error);
       } finally {
