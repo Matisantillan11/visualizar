@@ -1,31 +1,65 @@
 import { Container, ThemedText, ThemedTextVariants } from "@/components/UI";
 import { theme } from "@/constants";
 import { fetcher } from "@/lib/fetcher";
-import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
-import { ActivityIndicator } from "react-native-paper";
+import { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator } from 'react-native-paper';
+import { useAuthContext } from '../(auth)/hooks/useAuthContext';
+import { Role } from '../(auth)/interfaces';
 import { Book } from './book/types/book';
-import CardAligmentButton from "./components/card-aligment-button/card-aligment-button.component";
-import Card from "./components/card/card.component";
-import useBooksAligment, { BooksAligment } from "./hooks/use-books-aligment";
+import CardAligmentButton from './components/card-aligment-button/card-aligment-button.component';
+import Card from './components/card/card.component';
+import Dropdown from './components/dropdown';
+import useBooksAligment, { BooksAligment } from './hooks/use-books-aligment';
 
 export default function app() {
   const { bookAligment, flexDirection, setDirection } = useBooksAligment();
-  const isHorizontal = bookAligment === BooksAligment.horizontal;
+  const { user } = useAuthContext();
 
+  const [isLoadingCourses, setIsLoadingCourses] = useState<boolean>(true);
   const [books, setBook] = useState<Array<Book> | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [selectedGrade, setSelectedGrade] = useState('');
+  const [courses, setCourses] = useState<Array<{ label: string; value: string }> | undefined>(
+    undefined
+  );
+
+  const isHorizontal = bookAligment === BooksAligment.horizontal;
   const booksUrl = `/books`;
 
   useEffect(() => {
-    const fetchBook = async () => {
+    const fetchCourses = async () => {
       try {
-        const response = await fetcher<Book[]>({
-          url: booksUrl,
+        setIsLoadingCourses(true);
+        const courseResponse = await fetcher<any[]>({
+          url: `/courses/teacher/${user?.teacherId}`,
         });
 
-        if (response) {
-          setBook(response);
+        if (courseResponse) {
+          setSelectedGrade(courseResponse[0].id);
+          setCourses(courseResponse.map((course) => ({ label: course.name, value: course.id })));
+        }
+      } catch (error) {
+        console.log({ error });
+      } finally {
+        setIsLoadingCourses(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      setIsLoading(true);
+      if (isLoadingCourses) return;
+      try {
+        const bookResponse = await fetcher<any[]>({
+          url: `${booksUrl}/course/${selectedGrade}`,
+        });
+
+        if (bookResponse) {
+          setBook(bookResponse);
         }
       } catch (error) {
         console.log({ error });
@@ -34,9 +68,8 @@ export default function app() {
       }
     };
 
-    fetchBook();
-  }, []);
-
+    fetchBooks();
+  }, [isLoadingCourses, selectedGrade]);
 
   return (
     <Container gradient withNavbar>
@@ -44,56 +77,59 @@ export default function app() {
         style={{
           marginTop: -32,
           marginBottom: 21,
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}>
         <ThemedText style={styles.title} variant={ThemedTextVariants.default}>
           Todos los libros
         </ThemedText>
-        <View style={{ flexDirection: "row", gap: 4 }}>
-          <CardAligmentButton
-            iconName="grid-outline"
-            size={20}
-            onPress={() => setDirection(BooksAligment.horizontal)}
-            color="white"
-            isSelected={isHorizontal}
+
+        {user?.role === Role.TEACHER ? (
+          <Dropdown
+            value={selectedGrade}
+            onChange={(item: string) => setSelectedGrade(item)}
+            options={courses || []}
           />
-          <CardAligmentButton
-            iconName="list"
-            size={20}
-            onPress={() => setDirection(BooksAligment.vertical)}
-            color="white"
-            isSelected={!isHorizontal}
-          />
-        </View>
+        ) : (
+          <View style={{ flexDirection: 'row', gap: 4 }}>
+            <CardAligmentButton
+              iconName="grid-outline"
+              size={20}
+              onPress={() => setDirection(BooksAligment.horizontal)}
+              color="white"
+              isSelected={isHorizontal}
+            />
+            <CardAligmentButton
+              iconName="list"
+              size={20}
+              onPress={() => setDirection(BooksAligment.vertical)}
+              color="white"
+              isSelected={!isHorizontal}
+            />
+          </View>
+        )}
       </View>
       <ScrollView
         contentContainerStyle={{ paddingVertical: 16 }}
-        showsVerticalScrollIndicator={false}
-      >
+        showsVerticalScrollIndicator={false}>
         <View
           style={{
             flexDirection,
-            flexWrap: "wrap",
+            flexWrap: 'wrap',
             gap: 28,
-          }}
-        >
-          {isLoading ? (
+          }}>
+          {isLoading || isLoadingCourses ? (
             <View
               style={{
                 flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
               <ActivityIndicator color="white" />
             </View>
           ) : (
-            books?.map((book) => (
-              <Card isHorizontal={isHorizontal} book={book} key={book.id} />
-            ))
+            books?.map((book) => <Card isHorizontal={isHorizontal} book={book} key={book.id} />)
           )}
         </View>
       </ScrollView>

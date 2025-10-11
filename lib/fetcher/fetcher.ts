@@ -30,7 +30,6 @@ export const fetcher = async <T>({
     headers,
   };
   try {
-console.log({ endpoint, fetchInit });
     const url = new URL(endpoint).toString();
     const response = await fetch(url, fetchInit);
     const result = handleResponse<T>(response, responseType);

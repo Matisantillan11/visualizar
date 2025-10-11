@@ -6,12 +6,10 @@ import * as SplashScreen from 'expo-splash-screen';
 import { Loader } from '@/components/UI';
 import { theme } from '@/constants';
 import { useFonts } from 'expo-font';
-import { Slot, useRouter } from 'expo-router';
+import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { View } from 'react-native';
 import { AuthContextProvider } from './(auth)/context/useAuth.context';
-import { useAuthContext } from './(auth)/hooks/useAuthContext';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -57,26 +55,12 @@ export default function RootLayout() {
 }
 
 function RouterRedirector() {
-  const { user, isLoading } = useAuthContext();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (isLoading) return;
-    if (!user) {
-      router.replace('/(auth)');
-    } else {
-      router.replace('/(app)');
-    }
-  }, [user, isLoading]);
-
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Loader />
-      </View>
-    );
-  }
-
-  // This renders the correct layout after redirect
-  return <Slot />;
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <Stack.Screen name="index" />
+    </Stack>
+  );
 }

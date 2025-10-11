@@ -16,6 +16,8 @@ export default function Card({ isHorizontal, book }: CardProps) {
   const { width } = useWindowDimensions();
   const router = useRouter();
 
+console.log({ author: book.bookAuthor[0] });
+
   return (
     <TouchableOpacity onPress={() => router.push(`/(app)/book/${book.id}`)}>
       <View

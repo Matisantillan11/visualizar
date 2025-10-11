@@ -17,28 +17,13 @@ import { theme } from "@/constants";
 
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useRouter } from "expo-router";
-import React, { useEffect } from "react";
+import React from "react";
 import { useAuthContext } from "./hooks/useAuthContext";
 
 export default function Login() {
-  const router = useRouter();
-
   const { width, height } = useWindowDimensions();
-  const {
-    isLoading,
-    userEmailAttempt,
-    setUserEmailAttempt,
-    onSendEmailCode,
-    user,
-  } = useAuthContext();
-
-  useEffect(
-    function redirectToAppStack() {
-      if (user && user.email) router.push("/(app)");
-    },
-    [user]
-  );
+  const { isLoading, userEmailAttempt, setUserEmailAttempt, onSendEmailCode } =
+    useAuthContext();
 
   if (isLoading) {
     return <Loader />;

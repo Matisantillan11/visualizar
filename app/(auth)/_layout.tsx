@@ -4,12 +4,12 @@ import { Redirect, Stack } from "expo-router";
 import { useAuthContext } from "./hooks/useAuthContext";
 
 export default function AuthLayout() {
-  const { isSignedIn, isAuthChecked, isChecking } = useAuthContext();
+  const { isLoading, user } = useAuthContext();
 
-  if (isChecking) return <Loader />;
+  if (isLoading) return <Loader />;
 
-  if (isAuthChecked && isSignedIn) {
-    return <Redirect href={"/(app)"} />;
+  if (user && user.email) {
+    return <Redirect href={'/(app)'} />;
   }
 
   return (
