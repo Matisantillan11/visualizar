@@ -20,13 +20,9 @@ export default function AppLayout() {
         <Stack
           screenOptions={{
             header: (props) => (
-              <AppNavbar
-                {...props}
-                handlePresentModalPress={handlePresentModalPress}
-              />
+              <AppNavbar {...props} handlePresentModalPress={handlePresentModalPress} />
             ),
-          }}
-        >
+          }}>
           <Stack.Screen
             name="index"
             initialParams={{
@@ -44,6 +40,13 @@ export default function AppLayout() {
             initialParams={{
               canGoBack: () => true,
               gestureEnabled: true,
+            }}
+          />
+
+          <Stack.Screen
+            name="book/request-book"
+            initialParams={{
+              canGoBack: () => true,
             }}
           />
         </Stack>
