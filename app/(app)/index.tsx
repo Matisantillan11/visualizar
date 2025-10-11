@@ -19,12 +19,13 @@ export default function app() {
   const [isLoadingCourses, setIsLoadingCourses] = useState<boolean>(true);
   const [books, setBook] = useState<Array<Book> | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [selectedGrade, setSelectedGrade] = useState('');
-  const [courses, setCourses] = useState<Array<{ label: string; value: string }> | undefined>(
-    undefined
-  );
+  const [selectedGrade, setSelectedGrade] = useState('all');
+  const [courses, setCourses] = useState<Array<{ label: string; value: string }>>([
+    { label: 'Todos', value: 'all' },
+  ]);
 
   const isHorizontal = bookAligment === BooksAligment.horizontal;
+  const isTeacher = user?.role === Role.TEACHER;
   const booksUrl = `/books`;
 
   useEffect(() => {
@@ -36,8 +37,11 @@ export default function app() {
         });
 
         if (courseResponse) {
-          setSelectedGrade(courseResponse[0].id);
-          setCourses(courseResponse.map((course) => ({ label: course.name, value: course.id })));
+          const courses = courseResponse.map((course) => ({
+            label: course.name,
+            value: course.id,
+          }));
+          setCourses((prevCourses) => [...prevCourses, ...courses]);
         }
       } catch (error) {
         console.log({ error });
@@ -53,9 +57,12 @@ export default function app() {
     const fetchBooks = async () => {
       setIsLoading(true);
       if (isLoadingCourses) return;
+
       try {
+        const isAllGradesSelected = selectedGrade === 'all';
+        const finalBookUrl = isAllGradesSelected ? booksUrl : `${booksUrl}/course/${selectedGrade}`;
         const bookResponse = await fetcher<any[]>({
-          url: `${booksUrl}/course/${selectedGrade}`,
+          url: finalBookUrl,
         });
 
         if (bookResponse) {
@@ -85,7 +92,7 @@ export default function app() {
           Todos los libros
         </ThemedText>
 
-        {user?.role === Role.TEACHER ? (
+        {isTeacher ? (
           <Dropdown
             value={selectedGrade}
             onChange={(item: string) => setSelectedGrade(item)}
