@@ -65,6 +65,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
   const onSendEmailCode = async () => {
     try {
+      setIsLoading(true);
       await fetcher({
         url: '/auth/send-otp',
         init: {
@@ -81,6 +82,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.error('Error sending OTP:', error);
       throw new Error('Failed to send OTP code. Please try again.');
+    } finally {
+      setIsLoading(false)
     }
   };
 

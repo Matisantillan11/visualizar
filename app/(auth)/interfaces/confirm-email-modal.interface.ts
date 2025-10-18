@@ -25,6 +25,7 @@ export interface AuthUser {
   role: Role;
   email: string;
   name?: string;
+  avatar?: any;
 }
 
 export interface AuthSession {

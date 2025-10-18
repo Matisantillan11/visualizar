@@ -1,32 +1,19 @@
-import {
-  Button,
-  ButtonVariants,
-  Container,
-  Input,
-  Loader,
-  ThemedText,
-  ThemedTextVariants,
-} from "@/components/UI";
-import { StyleSheet, useWindowDimensions, View } from "react-native";
+import { Button, ButtonVariants, Container, Input, ThemedText } from '@/components/UI';
+import { ActivityIndicator, StyleSheet, useWindowDimensions, View } from 'react-native';
 
-import { BlurView } from "@/components/UI/blur-view/blur-view.component";
-import Ed from "@/components/UI/illustrations/ed-login.illustration";
-import Justin from "@/components/UI/illustrations/justin.illustration";
-import Kim from "@/components/UI/illustrations/kim.illustration";
-import { theme } from "@/constants";
+import { BlurView } from '@/components/UI/blur-view/blur-view.component';
+import Ed from '@/components/UI/illustrations/ed-login.illustration';
+import Justin from '@/components/UI/illustrations/justin.illustration';
+import Kim from '@/components/UI/illustrations/kim.illustration';
+import { theme } from '@/constants';
 
-import AntDesign from "@expo/vector-icons/AntDesign";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import Ionicons from '@expo/vector-icons/Ionicons';
 import React from 'react';
 import { useAuthContext } from './hooks/useAuthContext';
 
 export default function Login() {
   const { width, height } = useWindowDimensions();
   const { isLoading, userEmailAttempt, setUserEmailAttempt, onSendEmailCode } = useAuthContext();
-
-  if (isLoading) {
-    return <Loader />;
-  }
 
   return (
     <Container>
@@ -57,26 +44,11 @@ export default function Login() {
         />
 
         <Button onPress={onSendEmailCode} variant={ButtonVariants.solid}>
-          {isLoading ? <Loader /> : 'Ingresar'}
-        </Button>
-
-        <View style={styles.orContainer}>
-          <View style={styles.line} />
-          <ThemedText variant={ThemedTextVariants.default} style={styles.orText}>
-            O
-          </ThemedText>
-          <View style={styles.line} />
-        </View>
-
-        <Button
-          variant={ButtonVariants.outlined}
-          style={{ flexDirection: 'row' }}
-          leftIcon={
-            <View style={{ paddingHorizontal: 8 }}>
-              <AntDesign name="google" size={20} color={theme.primary.brand800} />
-            </View>
-          }>
-          Ingresa con google
+          {isLoading ? (
+            <ActivityIndicator size="small" color={theme.primary.brand50} />
+          ) : (
+            'Ingresar'
+          )}
         </Button>
       </View>
     </Container>
@@ -86,15 +58,15 @@ export default function Login() {
 const styles = StyleSheet.create({
   illustrationsContainer: {
     flex: 1,
-    position: "relative",
+    position: 'relative',
     marginBottom: 250,
     backgroundColor: theme.error.error800,
   },
   title: {
-    textAlign: "center",
+    textAlign: 'center',
     marginVertical: 32,
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   inputContainer: {
     gap: 16,
@@ -109,19 +81,5 @@ const styles = StyleSheet.create({
     marginTop: 64,
     gap: 16,
     paddingHorizontal: 48,
-  },
-  orContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  line: { flex: 1, height: 1, backgroundColor: theme.gray.gray400 },
-  orText: {
-    color: theme.gray.gray300,
-    textAlign: "center",
-    marginHorizontal: 8,
-  },
-  grayButton: {
-    backgroundColor: theme.gray.gray300,
   },
 });

@@ -1,8 +1,3 @@
-/* import {
-  BottomSheetModal,
-  BottomSheetModalProps,
-  BottomSheetView,
-} from "@gorhom/bottom-sheet"; */
 import { theme } from '@/constants';
 import { BottomSheet as BottomSheetModal } from '@rneui/themed';
 import { useCallback } from 'react';
@@ -18,6 +13,7 @@ export default function BottomSheet({ children, index = 1, items, onClose, ...pr
       onChange={handleSheetChanges}
       index={index}
       containerStyle={{
+        backgroundColor: '#00000085',
         paddingBottom: -35,
       }}
       onBackdropPress={() => onClose()}>
