@@ -1,29 +1,28 @@
-import { theme } from "@/constants";
-import {
+/* import {
   BottomSheetModal,
   BottomSheetModalProps,
   BottomSheetView,
-} from "@gorhom/bottom-sheet";
-import { ReactNode, RefObject, useCallback } from "react";
+} from "@gorhom/bottom-sheet"; */
+import { useCallback } from 'react';
 
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 
 export default function BottomSheet({
   children,
   bottomSheetRef,
-  snapPoints = ["50%"],
+  snapPoints = ['50%'],
   index = 1,
   ...props
-}: BottomSheetModalProps & {
-  children?: ReactNode;
-  bottomSheetRef: RefObject<BottomSheetModal | null>;
-}) {
+}: any) {
   const handleSheetChanges = useCallback((index: number) => {
-    console.log("handleSheetChanges", index);
+    console.log('handleSheetChanges', index);
   }, []);
 
-  return (
-    <BottomSheetModal
+  return <></>;
+}
+
+{
+  /* <BottomSheetModal
       {...props}
       ref={bottomSheetRef}
       onChange={handleSheetChanges}
@@ -40,8 +39,7 @@ export default function BottomSheet({
       <BottomSheetView style={styles.contentContainer}>
         {children}
       </BottomSheetView>
-    </BottomSheetModal>
-  );
+    </BottomSheetModal> */
 }
 
 const styles = StyleSheet.create({
@@ -50,7 +48,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    maxHeight: "50%",
-    alignItems: "center",
+    maxHeight: '50%',
+    alignItems: 'center',
   },
 });
