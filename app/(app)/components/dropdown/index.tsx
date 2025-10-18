@@ -1,3 +1,4 @@
+import { theme } from '@/constants';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Dropdown as DropdownCore } from 'react-native-element-dropdown';
@@ -13,11 +14,28 @@ const Dropdown = ({
 }) => {
   return (
     <DropdownCore
-      style={styles.dropdown}
-      placeholderStyle={styles.placeholderStyle}
-      selectedTextStyle={styles.selectedTextStyle}
-      inputSearchStyle={styles.inputSearchStyle}
+      style={[styles.dropdown, { backgroundColor: theme.primary.brand900 }]}
+      containerStyle={{
+        backgroundColor: theme.primary.brand950,
+        borderRadius: 8,
+        borderWidth: 1,
+        marginTop: 10,
+      }}
+      selectedTextStyle={{
+        backgroundColor: theme.primary.brand900,
+        color: theme.base.white,
+        borderRadius: 0,
+      }}
+      activeColor={theme.primary.brand900}
+      inputSearchStyle={[styles.inputSearchStyle, { color: theme.base.white }]}
       iconStyle={styles.iconStyle}
+      itemContainerStyle={{
+        backgroundColor: theme.primary.brand950,
+        borderRadius: 8,
+      }}
+      itemTextStyle={{
+        color: theme.base.white,
+      }}
       data={options}
       search
       maxHeight={300}
@@ -37,11 +55,12 @@ export default Dropdown;
 
 const styles = StyleSheet.create({
   dropdown: {
-    width: 125,
+    width: 150,
     height: 40,
+    paddingHorizontal: 10,
     borderColor: 'white',
     borderRadius: 8,
-    borderWidth: 0.5,
+    borderWidth: 1,
     color: 'white',
   },
   icon: {
@@ -52,12 +71,6 @@ const styles = StyleSheet.create({
     color: 'white',
     paddingHorizontal: 8,
   },
-  selectedTextStyle: {
-    fontSize: 16,
-    color: 'white',
-    paddingHorizontal: 8,
-    backgroundColor: 'transparent',
-  },
   iconStyle: {
     width: 20,
     height: 20,
@@ -66,6 +79,6 @@ const styles = StyleSheet.create({
   inputSearchStyle: {
     height: 40,
     fontSize: 16,
-    color: 'black2b',
+    borderWidth: 0,
   },
 });

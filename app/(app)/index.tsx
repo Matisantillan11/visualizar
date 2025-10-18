@@ -10,6 +10,7 @@ import { Book } from './book/types/book';
 import CardAligmentButton from './components/card-aligment-button/card-aligment-button.component';
 import Card from './components/card/card.component';
 import Dropdown from './components/dropdown';
+import { EmptyState } from './components/empty-state';
 import useBooksAligment, { BooksAligment } from './hooks/use-books-aligment';
 
 export default function app() {
@@ -124,7 +125,7 @@ export default function app() {
           style={{
             flexDirection,
             flexWrap: 'wrap',
-            gap: 28,
+            gap: books?.length ? 28 : 0,
           }}>
           {isLoading || isLoadingCourses ? (
             <View
@@ -135,8 +136,10 @@ export default function app() {
               }}>
               <ActivityIndicator color="white" />
             </View>
-          ) : (
+          ) : books?.length ? (
             books?.map((book) => <Card isHorizontal={isHorizontal} book={book} key={book.id} />)
+          ) : (
+            <EmptyState />
           )}
         </View>
       </ScrollView>
