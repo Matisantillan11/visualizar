@@ -136,6 +136,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const handleSignOut = async () => {
+    console.log('click');
     await removeSession();
     setSession(undefined);
     setUser(undefined);

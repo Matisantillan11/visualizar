@@ -1,22 +1,21 @@
 import { AppNavbar } from "@/components/navbar/app-navbar.component";
-import Menu from "@/components/navbar/menu/menu.component";
-/* import {
-  BottomSheetModal,
-  BottomSheetModalProvider,
-} from "@gorhom/bottom-sheet"; */
+import Menu from '@/components/navbar/menu/menu.component';
 import { Stack } from "expo-router";
-import { useCallback, useRef } from "react";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useCallback, useState } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function AppLayout() {
-  const bottomSheetModalRef = useRef<any>(null);
+  const [isVisible, setIsVisible] = useState(false);
   const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
+    setIsVisible(true);
   }, []);
+
+  const onClose = () => {
+    setIsVisible(false);
+  };
 
   return (
     <GestureHandlerRootView>
-      {/* <BottomSheetModalProvider> */}
       <Stack
         screenOptions={{
           header: (props) => (
@@ -51,8 +50,7 @@ export default function AppLayout() {
         />
       </Stack>
 
-      <Menu bottomSheetModalRef={bottomSheetModalRef} />
-      {/* </BottomSheetModalProvider> */}
+      <Menu isVisible={isVisible} onClose={onClose} />
     </GestureHandlerRootView>
   );
 }
