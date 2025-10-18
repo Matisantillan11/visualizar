@@ -4,18 +4,8 @@ import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import { ExpoWebGLRenderingContext, GLView } from "expo-gl";
 import { Renderer } from "expo-three";
 import { useRef, useState } from "react";
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  useWindowDimensions,
-  View,
-} from "react-native";
-import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
-} from "react-native-gesture-handler";
+import { ActivityIndicator, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
