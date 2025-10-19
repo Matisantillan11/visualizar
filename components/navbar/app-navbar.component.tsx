@@ -13,7 +13,6 @@ type AppNavbarProps = NativeStackHeaderProps & {
 
 export const AppNavbar = (props: AppNavbarProps) => {
   const { handlePresentModalPress } = props;
-  console.log({ canGo: props.navigation.canGoBack(), props });
 
   return (
     <Appbar.Header
@@ -21,10 +20,9 @@ export const AppNavbar = (props: AppNavbarProps) => {
       style={{
         backgroundColor: theme.primary.brand800,
         paddingHorizontal: 40,
-        justifyContent: "space-between",
-        alignItems: "center",
-      }}
-    >
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}>
       {props.navigation.canGoBack() ? (
         <TouchableOpacity onPress={() => props.navigation.goBack()}>
           <Icon size={40} source="chevron-left" color="white" />
@@ -36,13 +34,12 @@ export const AppNavbar = (props: AppNavbarProps) => {
             width: 150,
             height: 50,
             marginLeft: -15,
-          }}
-        >
+          }}>
           <Image
-            source={require("../../assets/images/negative-horizontal-logo.png")}
+            source={require('../../assets/images/negative-horizontal-logo.png')}
             style={{
-              width: "100%",
-              height: "100%",
+              width: '100%',
+              height: '100%',
             }}
             contentFit="fill"
             transition={1000}
@@ -50,7 +47,7 @@ export const AppNavbar = (props: AppNavbarProps) => {
         </Link>
       )}
 
-      {props.route.name === "book/camera" ? null : (
+      {props.route.name === 'book/camera' ? null : (
         <TouchableOpacity onPress={handlePresentModalPress}>
           <Icon size={35} source="account-circle" color="white" />
         </TouchableOpacity>
