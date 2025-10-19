@@ -9,24 +9,12 @@ import { StyleSheet, View } from 'react-native';
 
 import { VerticalLinearGradient } from '@/components/linear-gradient/linear-gradient.component';
 import { theme } from '@/constants';
-import { fetcher } from '@/lib/fetcher';
-import React, { useEffect, useState } from 'react';
-import Dropdown from '../../components/dropdown';
+import React, { useState } from 'react';
 
 export default function RequestBook() {
   const [bookName, setBookName] = useState<string>('');
+  const [authorName, setAuthorName] = useState<string>('');
   const [comments, setComments] = useState<string>('');
-
-  const [authors, setAuthors] = useState<Array<{ label: string; value: string }>>([]);
-  const [selectedAuthor, setSelectedAuthor] = useState<string>('');
-
-  useEffect(() => {
-    const fetchAuthors = async () => {
-      const authors = await fetcher<Array<any>>({ url: '/authors' });
-      setAuthors(authors.map((author) => ({ label: author.name, value: author.id })));
-    };
-    fetchAuthors();
-  }, []);
 
   return (
     <VerticalLinearGradient>
@@ -45,11 +33,15 @@ export default function RequestBook() {
             onChangeText={(value) => setBookName(value)}
           />
 
-          <Dropdown
-            value={selectedAuthor}
-            onChange={(item: string) => setSelectedAuthor(item)}
-            options={authors || []}
-          />
+          <View style={{ width: '75%' }}>
+            <Input
+              onPressOut={(e) => e.stopPropagation()}
+              placeholder="Nombre del autor"
+              keyboardType="default"
+              value={authorName}
+              onChangeText={(value) => setAuthorName(value)}
+            />
+          </View>
 
           <Input
             style={{ height: 100, color: theme.gray.gray400 }}
@@ -61,6 +53,8 @@ export default function RequestBook() {
             value={comments}
             onChangeText={(value) => setComments(value)}
           />
+
+          {/* TODO: Add checkboxes */}
         </View>
 
         <View style={styles.buttonsContainer}>
