@@ -18,6 +18,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import RateBookBottomSheet from '../../components/rate-book-bottom-sheet';
 import { Book } from '../types/book';
 
 export default function BookDetail() {
@@ -88,6 +89,8 @@ export default function BookDetail() {
     animate();
   };
 
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+
   return (
     <VerticalLinearGradient>
       <View style={{ flex: 1 }}>
@@ -137,13 +140,21 @@ export default function BookDetail() {
               <Button style={{ width: width / 2.5 }} onPress={() => router.push('/book/camera')}>
                 Ver animaciones
               </Button>
-              <Button variant={ButtonVariants.outlined} style={{ width: width / 2.5 }}>
+              <Button
+                variant={ButtonVariants.outlined}
+                style={{ width: width / 2.5 }}
+                onPress={() => setIsVisible(true)}>
                 Calificar libro
               </Button>
             </View>
           </ScrollView>
         )}
       </View>
+      <RateBookBottomSheet
+        isVisible={isVisible}
+        onClose={() => setIsVisible(false)}
+        bookName={book?.name as string}
+      />
     </VerticalLinearGradient>
   );
 }
