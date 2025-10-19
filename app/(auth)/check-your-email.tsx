@@ -9,14 +9,17 @@ import { EmailIllustration } from "@/components/UI/illustrations/email.illustati
 import { theme } from "@/constants";
 import { useRouter } from "expo-router";
 import React from "react";
-import { StyleSheet, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 
 const GMAIL_URL = "googlegmail://";
 export default function CheckYourEmail() {
   const router = useRouter();
 
   const onOpenEmailApp = async () => {
-    //Linking.openURL(GMAIL_URL);
+    if (await Linking.canOpenURL(GMAIL_URL)) {
+      Linking.openURL(GMAIL_URL);
+    }
+
     router.push('/(auth)/validate-code');
   };
 

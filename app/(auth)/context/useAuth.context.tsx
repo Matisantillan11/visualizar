@@ -10,6 +10,8 @@ type AuthStateContextProps = {
   userCodeAttempt: string | undefined;
   setUserCodeAttempt: Dispatch<string | undefined>;
   isLoading: boolean;
+  isValidatingCode: boolean;
+  wasCodeResent: boolean;
   handleSignOut: () => void;
   getUserData: () =>
     | {
@@ -17,7 +19,7 @@ type AuthStateContextProps = {
         avatar: string | undefined;
       }
     | undefined;
-  onSendEmailCode: () => Promise<void>;
+  onSendEmailCode: (isResending: boolean) => Promise<void>;
   onValidateCode: () => Promise<void>;
   user: AuthUser | undefined;
   session: AuthSession | undefined;
@@ -31,6 +33,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AuthUser | undefined>(undefined);
   const [session, setSession] = useState<AuthSession | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isValidatingCode, setIsValidatingCode] = useState<boolean>(false);
+  const [wasCodeResent, setWasCodeResent] = useState<boolean>(false);
   const [userEmailAttempt, setUserEmailAttempt] = useState<string | undefined>(undefined);
   const [userCodeAttempt, setUserCodeAttempt] = useState<string | undefined>(undefined);
 
@@ -63,7 +67,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     await removeItem('user');
   };
 
-  const onSendEmailCode = async () => {
+  const onSendEmailCode = async (isResending: boolean) => {
+    console.log({ userEmailAttempt, isResending });
     try {
       setIsLoading(true);
       await fetcher({
@@ -78,17 +83,22 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         withAuthentication: false, // No auth needed for sending OTP
       });
 
-      router.push('/(auth)/check-your-email');
+      if (!isResending) {
+        router.push('/(auth)/check-your-email');
+      } else {
+        setWasCodeResent(true);
+      }
     } catch (error) {
+      if (isResending) setWasCodeResent(false);
       console.error('Error sending OTP:', error);
       throw new Error('Failed to send OTP code. Please try again.');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
 
   const onValidateCode = async () => {
-    setIsLoading(true);
+    setIsValidatingCode(true);
     try {
       const response = await fetcher<AuthResponse>({
         url: '/auth/verify-otp',
@@ -127,14 +137,16 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
           await saveUser(authUser);
           setUser(authUser);
           setSession(authSession);
-          router.push('/(app)');
+          setUserCodeAttempt('');
+          setUserEmailAttempt('');
+          router.navigate('/(app)');
         }
       }
     } catch (error) {
       console.error('Error validating code:', error);
       throw new Error('Failed to validate code. Please try again.');
     } finally {
-      setIsLoading(false);
+      setIsValidatingCode(false);
     }
   };
 
@@ -184,6 +196,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         userCodeAttempt,
         setUserCodeAttempt,
         isLoading,
+        isValidatingCode,
+        wasCodeResent,
         onSendEmailCode,
         onValidateCode,
         handleSignOut,

@@ -11,12 +11,26 @@ import {
 import { StyleSheet, View } from 'react-native';
 
 import { theme } from '@/constants';
-import React from 'react';
+import React, { useEffect } from 'react';
+import ToastManager, { Toast } from 'toastify-react-native';
 import { useAuthContext } from './hooks/useAuthContext';
 
 export default function ValidateCode() {
-  const { isLoading, userCodeAttempt, setUserCodeAttempt, onSendEmailCode, onValidateCode } =
-    useAuthContext();
+  const {
+    isValidatingCode,
+    isLoading,
+    userCodeAttempt,
+    wasCodeResent,
+    setUserCodeAttempt,
+    onSendEmailCode,
+    onValidateCode,
+  } = useAuthContext();
+
+  useEffect(() => {
+    if (!isLoading && wasCodeResent) {
+      Toast.success('Hemos enviado un nuevo codigo a tu correo electronico!');
+    }
+  }, [isLoading, wasCodeResent]);
 
   return (
     <Container gradient>
@@ -39,7 +53,7 @@ export default function ValidateCode() {
       <ThemedText variant={ThemedTextVariants.default} style={styles.noReceived}>
         No recibiste tu código? Asegurate de chequear tu spam o
         <ThemedText
-          onPress={onSendEmailCode}
+          onPress={() => onSendEmailCode(true)}
           variant={ThemedTextVariants.default}
           style={styles.coloredNoReceivedText}>
           {' '}
@@ -48,10 +62,12 @@ export default function ValidateCode() {
       </ThemedText>
 
       <View style={styles.buttonsContainer}>
-        <Button onPress={onValidateCode} variant={ButtonVariants.solid}>
-          {isLoading ? <Loader /> : 'Validar código'}
+        <Button onPress={onValidateCode} variant={ButtonVariants.solid} disabled={isLoading}>
+          {isValidatingCode ? <Loader /> : 'Validar código'}
         </Button>
       </View>
+
+      <ToastManager position="bottom" animationStyle="fade" showProgressBar={false} />
     </Container>
   );
 }

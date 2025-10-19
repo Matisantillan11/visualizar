@@ -13,6 +13,7 @@ type AppNavbarProps = NativeStackHeaderProps & {
 
 export const AppNavbar = (props: AppNavbarProps) => {
   const { handlePresentModalPress } = props;
+  console.log({ canGo: props.navigation.canGoBack(), props });
 
   return (
     <Appbar.Header

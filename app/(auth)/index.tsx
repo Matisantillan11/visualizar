@@ -36,38 +36,43 @@ export default function Login() {
         <Kim />
         <Justin />
       </View>
+      <View style={{ marginTop: 50 }}>
+        <ThemedText style={styles.title}>¡Hola! Inicia sesión</ThemedText>
+        <View style={styles.inputContainer}>
+          <Input
+            placeholder="Correo electrónico"
+            rightIcon={
+              <Ionicons
+                name="at"
+                size={16}
+                color={theme.gray.gray400}
+                style={styles.iconRight}
+              />
+            }
+            value={userEmailAttempt}
+            onChangeText={(value: string) => setUserEmailAttempt(value)}
+          />
+        </View>
+        <View style={styles.buttonsContainer}>
+          <BlurView
+            color={theme.primary.brand300}
+            intensity={40}
+            size={425}
+            left={-width / 8}
+            top={-30}
+          />
 
-      <ThemedText style={styles.title}>¡Hola! Inicia sesión</ThemedText>
-      <View style={styles.inputContainer}>
-        <Input
-          placeholder="Correo electrónico"
-          rightIcon={
-            <Ionicons
-              name="at"
-              size={16}
-              color={theme.gray.gray400}
-              style={styles.iconRight}
-            />
-          }
-          value={userEmailAttempt}
-          onChangeText={(value: string) => setUserEmailAttempt(value)}
-        />
-      </View>
-      <View style={styles.buttonsContainer}>
-        <BlurView
-          color={theme.primary.brand300}
-          intensity={40}
-          size={425}
-          left={-width / 8}
-          top={-30}
-        />
-        <Button onPress={onSendEmailCode} variant={ButtonVariants.solid}>
-          {isLoading ? (
-            <ActivityIndicator size="small" color={theme.primary.brand50} />
-          ) : (
-            "Ingresar"
-          )}
-        </Button>
+          <Button
+            onPress={() => onSendEmailCode(false)}
+            variant={ButtonVariants.solid}
+          >
+            {isLoading ? (
+              <ActivityIndicator size="small" color={theme.primary.brand50} />
+            ) : (
+              "Ingresar"
+            )}
+          </Button>
+        </View>
       </View>
     </Container>
   );
@@ -96,8 +101,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   buttonsContainer: {
-    marginTop: 64,
-    gap: 16,
+    marginTop: 32,
     paddingHorizontal: 48,
   },
 });
