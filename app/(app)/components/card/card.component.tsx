@@ -16,8 +16,12 @@ export default function Card({ isHorizontal, book }: CardProps) {
   const { width } = useWindowDimensions();
   const router = useRouter();
 
+  const handleOpenBookDetails = () => {
+    router.push(`/(app)/book/${book.id}`);
+  };
+
   return (
-    <TouchableOpacity onPress={() => router.push(`/(app)/book/${book.id}`)}>
+    <TouchableOpacity onPress={handleOpenBookDetails}>
       <View
         style={{
           width: isHorizontal ? 150 : width,
@@ -71,7 +75,7 @@ export default function Card({ isHorizontal, book }: CardProps) {
           ) : null}
 
           {!isHorizontal ? (
-            <Button style={{ maxWidth: 150, maxHeight: 28, marginTop: 16 }}>Ver detalles</Button>
+            <Button onPress={handleOpenBookDetails} style={{ maxWidth: 150, maxHeight: 28, marginTop: 16 }}>Ver detalles</Button>
           ) : null}
         </View>
       </View>

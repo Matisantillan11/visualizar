@@ -17,6 +17,11 @@ export default function Menu({ isVisible, onClose }: { isVisible: boolean; onClo
     onClose();
   };
 
+  const navigateToFaqs = () => {
+    router.navigate('/faqs');
+    onClose();
+  };
+
   const handleLogOut = () => {
     handleSignOut();
     onClose();
@@ -37,7 +42,7 @@ export default function Menu({ isVisible, onClose }: { isVisible: boolean; onClo
               />
             )}
 
-            <NavbarLink source="message-text-outline" linkText="FAQs" />
+            <NavbarLink source="message-text-outline" linkText="FAQs" onPress={navigateToFaqs} />
             <NavbarLink source="thumb-up-outline" linkText="Dar feedback" />
             <NavbarLink source="exit-to-app" linkText="Cerrar Sesión" onPress={handleLogOut} />
           </View>

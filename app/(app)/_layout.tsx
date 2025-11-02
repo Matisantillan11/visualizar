@@ -48,6 +48,13 @@ export default function AppLayout() {
             canGoBack: () => true,
           }}
         />
+
+        <Stack.Screen
+          name="faqs"
+          initialParams={{
+            canGoBack: () => true,
+          }}
+        />
       </Stack>
 
       <Menu isVisible={isVisible} onClose={onClose} />
