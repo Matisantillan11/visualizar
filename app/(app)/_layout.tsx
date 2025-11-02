@@ -64,7 +64,6 @@ export default function AppLayout() {
           name="book/[id]/animate"
           initialParams={{
             canGoBack: () => true,
-            models: [],
           }}
         />
       </Stack>
