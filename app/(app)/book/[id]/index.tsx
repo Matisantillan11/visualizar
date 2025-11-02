@@ -100,11 +100,15 @@ export default function BookDetail() {
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
             <View
               style={{
-                alignItems: 'center',
+                alignItems: "center",
                 marginVertical: 35,
-              }}>
+              }}
+            >
               <ThemedText>{book?.name}</ThemedText>
-              <ThemedText variant={ThemedTextVariants.default} style={{ fontSize: 16 }}>
+              <ThemedText
+                variant={ThemedTextVariants.default}
+                style={{ fontSize: 16 }}
+              >
                 {book?.bookAuthor[0].author.name}
               </ThemedText>
             </View>
@@ -128,22 +132,28 @@ export default function BookDetail() {
               style={{
                 marginTop: -225,
                 paddingHorizontal: 32,
-              }}>
+              }}
+            >
               {book?.description?.slice(0, 300)}...
             </ThemedText>
             <View
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
+                flexDirection: "row",
+                justifyContent: "space-between",
                 padding: 32,
-              }}>
-              <Button style={{ width: width / 2.5 }} onPress={() => router.push('/book/camera')}>
+              }}
+            >
+              <Button
+                style={{ width: width / 2.5 }}
+                onPress={() => router.push("/book/animation")}
+              >
                 Ver animaciones
               </Button>
               <Button
                 variant={ButtonVariants.outlined}
                 style={{ width: width / 2.5 }}
-                onPress={() => setIsVisible(true)}>
+                onPress={() => setIsVisible(true)}
+              >
                 Calificar libro
               </Button>
             </View>

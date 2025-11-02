@@ -1,5 +1,5 @@
 import { Container, ThemedText } from "@/components/UI";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import Accordion from "../components/accordion";
 import FaqContent from "./components/faq-content";
 import { FAQS } from "./constants";
@@ -7,27 +7,29 @@ import { FAQS } from "./constants";
 export default function Faqs() {
   return (
     <Container gradient withNavbar>
-      <View
-        style={{
-          width: "100%",
-          justifyContent: "center",
-          alignItems: "center",
-          marginTop: -40,
-          marginBottom: 30,
-        }}
-      >
-        <ThemedText>Preguntas Frecuentes</ThemedText>
-      </View>
-
-      {FAQS.map((faq, index) => (
-        <Accordion
-          title={faq.title}
-          isDefaultExpanded={index === 0 || index === 1}
-          key={index}
+      <ScrollView>
+        <View
+          style={{
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: -40,
+            marginBottom: 30,
+          }}
         >
-          <FaqContent content={faq.content} />
-        </Accordion>
-      ))}
+          <ThemedText>Preguntas Frecuentes</ThemedText>
+        </View>
+
+        {FAQS.map((faq, index) => (
+          <Accordion
+            title={faq.title}
+            isDefaultExpanded={index === 0 || index === 1}
+            key={index}
+          >
+            <FaqContent content={faq.content} />
+          </Accordion>
+        ))}
+      </ScrollView>
     </Container>
   );
 }
