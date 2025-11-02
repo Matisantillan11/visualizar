@@ -61,9 +61,10 @@ export default function AppLayout() {
         />
 
         <Stack.Screen
-          name="book/animation"
+          name="book/[id]/animate"
           initialParams={{
             canGoBack: () => true,
+            models: [],
           }}
         />
       </Stack>

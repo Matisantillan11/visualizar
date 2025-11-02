@@ -65,12 +65,12 @@ export default function BookDetail() {
     // Add a cube
     const geometry = new THREE.BoxGeometry(0.65, 1, 0.1);
     const materials = [
-      new THREE.MeshBasicMaterial({ color: '#8B0000' }), // right
-      new THREE.MeshBasicMaterial({ color: '#FFFFFF' }), // left
-      new THREE.MeshBasicMaterial({ color: '#FFFFFF' }), // top
-      new THREE.MeshBasicMaterial({ color: '#FFFFFF' }), // bottom
-      new THREE.MeshBasicMaterial({ color: '#8B0000' }), // front
-      new THREE.MeshBasicMaterial({ color: '#8B0000' }), // back (lomo)
+      new THREE.MeshBasicMaterial({ color: "#8B0000" }), // right
+      new THREE.MeshBasicMaterial({ color: "#FFFFFF" }), // left
+      new THREE.MeshBasicMaterial({ color: "#FFFFFF" }), // top
+      new THREE.MeshBasicMaterial({ color: "#FFFFFF" }), // bottom
+      new THREE.MeshBasicMaterial({ color: "#8B0000" }), // front
+      new THREE.MeshBasicMaterial({ color: "#8B0000" }), // back (lomo)
     ];
     const book = new THREE.Mesh(geometry, materials);
     book.position.y = 0.65;
@@ -145,7 +145,7 @@ export default function BookDetail() {
             >
               <Button
                 style={{ width: width / 2.5 }}
-                onPress={() => router.push("/book/animation")}
+                onPress={() => router.push(`/book/${id}/animate`)}
               >
                 Ver animaciones
               </Button>

@@ -3,14 +3,8 @@ import { loadModel } from "@/utils/3d";
 import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import { ExpoWebGLRenderingContext, GLView } from "expo-gl";
 import { Renderer } from "expo-three";
-import React, { useState } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import {
   AmbientLight,
   HemisphereLight,
@@ -19,108 +13,10 @@ import {
   PointLight,
   Scene,
 } from "three";
-
-const modelOBJ = {
-  dato: {
-    type: "obj",
-    name: "dato",
-    isometric: false,
-    model: require("../models/dato-curioso/dato-curioso.obj"),
-    textures: [
-      {
-        image: require("../models/dato-curioso/dato-curioso.png"),
-      },
-    ],
-    scale: {
-      x: 0.7,
-      y: 0.7,
-      z: 0.7,
-    },
-    position: {
-      x: 0,
-      y: 3,
-      z: 0,
-    },
-  },
-  fernando: {
-    type: "obj",
-    name: "fernando",
-    isometric: false,
-    model: require("../models/fernando/fernando.obj"),
-    textures: [
-      {
-        image: require("../models/fernando/fernando.png"),
-      },
-    ],
-    scale: {
-      x: 5,
-      y: 5,
-      z: 5,
-    },
-    position: {
-      x: 0,
-      y: -3,
-      z: 0,
-    },
-    animation: {
-      rotation: {
-        y: 0.01,
-      },
-    },
-  },
-  "fernando-adulto": {
-    type: "obj",
-    name: "fernando-adulto",
-    isometric: false,
-    model: require("../models/fernando-adulto/fernando-adulto.obj"),
-    textures: [
-      {
-        image: require("../models/fernando-adulto/fernando-adulto.png"),
-      },
-    ],
-    scale: {
-      x: 5,
-      y: 5,
-      z: 5,
-    },
-    position: {
-      x: 0,
-      y: 0,
-      z: 0,
-    },
-    animation: {
-      rotation: {
-        y: 0.01,
-      },
-    },
-  },
-  mercedes: {
-    type: "obj",
-    name: "mercedes",
-    isometric: false,
-    model: require("../models/mercedes/mercedes.obj"),
-    textures: [
-      {
-        image: require("../models/mercedes/mercedes.png"),
-      },
-    ],
-    scale: {
-      x: 5,
-      y: 5,
-      z: 5,
-    },
-    position: {
-      x: 0,
-      y: -3,
-      z: 0,
-    },
-    animation: {
-      rotation: {
-        y: 0.01,
-      },
-    },
-  },
-};
+import { BottomNavigation } from "./components/bottom-navigation";
+import { modelUrls } from "./constants";
+import { Model } from "./types";
+import { createModelFromUrls } from "./utils";
 
 const onContextCreate = async (gl: any, data: any) => {
   // const {setRenderer, setCamera, setScene} = data;
@@ -152,11 +48,11 @@ const onContextCreate = async (gl: any, data: any) => {
   // scene.add(pointLight);
 
   // HemisphereLight - color feels nicer
-  const hemisphereLight = new HemisphereLight(0xffffbb, 0x080820, 1);
+  const hemisphereLight = new HemisphereLight(0x000000, 0xffffff, 1);
   scene.add(hemisphereLight);
 
   // AmbientLight - add more brightness?
-  const ambientLight = new AmbientLight(0x404040); // soft white light
+  const ambientLight = new AmbientLight(0xffffff); // soft white light
   scene.add(ambientLight);
 
   let models: any[] = [];
@@ -208,43 +104,24 @@ const onContextCreate = async (gl: any, data: any) => {
   render();
 };
 
-interface Model {
-  type: string;
-  name: string;
-  isometric?: boolean;
-  model: any;
-  textures: {
-    image: any;
-  }[];
-  scale?: {
-    x: number;
-    y: number;
-    z: number;
-  };
-  position: {
-    x: number;
-    y: number;
-    z: number;
-  };
-  animation?: {
-    rotation: {
-      x?: number;
-      y?: number;
-    };
-  };
-}
-const RNThree = (props: any) => {
-  const models = [
-    modelOBJ.dato,
-    modelOBJ.fernando,
-    modelOBJ.mercedes,
-    modelOBJ["fernando-adulto"],
-  ];
-  const [selected, setSelected] = useState<Model | null>(models[0]);
+const Animate = () => {
+  const [models, setModels] = useState<Model[]>([]);
+  const [selected, setSelected] = useState<Model | null>(null);
   const [gl, setGL] = useState<ExpoWebGLRenderingContext | null>(null);
   const [permission, requestPermission] = useCameraPermissions();
   const [facing, setFacing] = useState<CameraType>("back");
-  const [isLoading, setIsLoading] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const models = modelUrls
+      .map((u) => createModelFromUrls(u.model, u.textures))
+      .filter((m) => m !== null);
+
+    if (models && models?.length > 0) {
+      setModels(models);
+      setSelected(models[0] ?? null);
+    }
+  }, []);
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -261,17 +138,50 @@ const RNThree = (props: any) => {
     );
   }
 
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+      setSelected(null);
+      setTimeout(() => {
+        setSelected(models[currentIndex - 1] as any);
+      }, 200);
+    }
+
+    if (currentIndex === 0) {
+      setCurrentIndex(models.length - 1);
+      setSelected(null);
+      setTimeout(() => {
+        setSelected(models[models.length - 1] as any);
+      }, 200);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentIndex < models.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+      setSelected(null);
+      setTimeout(() => {
+        setSelected(models[currentIndex + 1] as any);
+      }, 200);
+    }
+
+    if (currentIndex === models.length - 1) {
+      setCurrentIndex(0);
+      setSelected(null);
+      setTimeout(() => {
+        setSelected(models[0] as any);
+      }, 200);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={{ flex: 1 }}>
         {selected ? (
-          <CameraView
-            style={{ flex: 1 }}
-            facing={facing}
-            onCameraReady={() => setIsLoading(false)}
-          >
+          <CameraView style={{ flex: 1 }} facing={facing}>
             <ThemedText style={{ textAlign: "center", paddingVertical: 40 }}>
-              {selected.name.split("-").join(" ").toUpperCase()}
+              {selected?.name?.split("-")?.join(" ")?.toUpperCase() ||
+                "Loading..."}
             </ThemedText>
 
             <GLView
@@ -289,52 +199,19 @@ const RNThree = (props: any) => {
             <Text>Loading...</Text>
           </View>
         )}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={{
-            flexDirection: "row",
-            position: "absolute",
-            bottom: 50,
-            alignContent: "center",
-            left: "35%",
-            right: 0,
-          }}
-        >
-          {models.map((x) => (
-            <View
-              key={`${x.name}-${x.type}`}
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <TouchableOpacity
-                style={{
-                  borderRadius: 100,
-                  borderWidth: 1,
-                  borderColor: "#3389c5",
-                  backgroundColor: selected === x ? "#3389c5" : "#3389c5",
-                  padding: selected === x ? 8 : 6,
-                  marginRight: 10,
-                }}
-                onPress={() => {
-                  setSelected(null);
-                  setTimeout(() => {
-                    setSelected(x);
-                  }, 200);
-                }}
-              />
-            </View>
-          ))}
-        </ScrollView>
+
+        <BottomNavigation
+          handlePrevious={handlePrevious}
+          handleNext={handleNext}
+          currentIndex={currentIndex}
+          optionsLength={models.length}
+        />
       </View>
     </View>
   );
 };
 
-export default RNThree;
+export default Animate;
 
 const styles = StyleSheet.create({
   container: {
