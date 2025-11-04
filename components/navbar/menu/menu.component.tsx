@@ -42,9 +42,16 @@ export default function Menu({ isVisible, onClose }: { isVisible: boolean; onClo
               />
             )}
 
-            <NavbarLink source="message-text-outline" linkText="FAQs" onPress={navigateToFaqs} />
-            <NavbarLink source="thumb-up-outline" linkText="Dar feedback" />
-            <NavbarLink source="exit-to-app" linkText="Cerrar Sesión" onPress={handleLogOut} />
+            <NavbarLink
+              source="message-text-outline"
+              linkText="FAQs"
+              onPress={navigateToFaqs}
+            />
+            <NavbarLink
+              source="exit-to-app"
+              linkText="Cerrar Sesión"
+              onPress={handleLogOut}
+            />
           </View>
         );
       }}

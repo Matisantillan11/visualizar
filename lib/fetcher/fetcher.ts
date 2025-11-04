@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { fetch } from "expo/fetch";
 import { BASE_URL } from "./constants";
 import { APIFetchArgs } from "./types";
@@ -32,6 +33,12 @@ export const fetcher = async <T>({
   try {
     const url = new URL(endpoint).toString();
     const response = await fetch(url, fetchInit);
+
+    if (response.status === 401) {
+      await AsyncStorage.removeItem("session");
+      await AsyncStorage.removeItem("user");
+    }
+
     const result = handleResponse<T>(response, responseType);
 
     return result;

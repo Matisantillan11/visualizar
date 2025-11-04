@@ -68,30 +68,29 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const onSendEmailCode = async (isResending: boolean) => {
-    console.log({ userEmailAttempt, isResending });
     try {
       setIsLoading(true);
       await fetcher({
-        url: '/auth/send-otp',
+        url: "/auth/send-otp",
         init: {
-          method: 'POST',
+          method: "POST",
           body: JSON.stringify({ email: userEmailAttempt }),
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         },
         withAuthentication: false, // No auth needed for sending OTP
       });
 
       if (!isResending) {
-        router.push('/(auth)/check-your-email');
+        router.push("/(auth)/check-your-email");
       } else {
         setWasCodeResent(true);
       }
     } catch (error) {
       if (isResending) setWasCodeResent(false);
-      console.error('Error sending OTP:', error);
-      throw new Error('Failed to send OTP code. Please try again.');
+      console.error("Error sending OTP:", error);
+      throw new Error("Failed to send OTP code. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -169,7 +168,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         const session = await getSession();
         const user = await getUser();
 
-        console.log({ session, user });
         if (session && user) {
           setSession(session as AuthSession);
           setUser(user as AuthUser);
