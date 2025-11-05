@@ -20,15 +20,25 @@ import {
 } from "react-native";
 import RateBookBottomSheet from '../../components/rate-book-bottom-sheet';
 import { Book } from '../types/book';
+import { useModelPreload } from "./context/model-preload.context";
 
 export default function BookDetail() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const requestRef = useRef<number>(0);
+  const { setBookId } = useModelPreload();
 
   const [book, setBook] = useState<Book | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const bookUrl = `/books/${id}`;
+
+  // Set the bookId in context when the page loads
+  // We don't clear it on unmount to keep the cache for when user returns
+  useEffect(() => {
+    if (id) {
+      setBookId(id);
+    }
+  }, [id, setBookId]);
 
   useEffect(() => {
     const fetchBook = async () => {
