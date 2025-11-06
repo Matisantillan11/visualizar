@@ -1,24 +1,26 @@
 import { useAuthContext } from "@/app/(auth)/hooks/useAuthContext";
+import { Role } from "@/app/(auth)/interfaces";
 import { ThemedText, ThemedTextVariants } from "@/components/UI";
-import { theme } from '@/constants';
-import { Image } from 'expo-image';
-import { View } from 'react-native';
+import { theme } from "@/constants";
+import { Image } from "expo-image";
+import { View } from "react-native";
 
 export default function Profile() {
   const { user } = useAuthContext();
-
+  const isTeacher = user?.role === Role.TEACHER;
   if (!user) return null;
 
   return (
     <View
       style={{
-        width: '100%',
+        width: "100%",
         flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
+        flexDirection: "row",
+        justifyContent: "flex-start",
+        alignItems: "center",
         padding: 16,
-      }}>
+      }}
+    >
       {user?.avatar ? (
         <Image
           source={{
@@ -33,10 +35,11 @@ export default function Profile() {
             width: 50,
             height: 50,
             borderRadius: 100,
-            justifyContent: 'center',
-            alignItems: 'center',
+            justifyContent: "center",
+            alignItems: "center",
             backgroundColor: theme.primary.brand800,
-          }}>
+          }}
+        >
           <ThemedText>{user?.name?.slice(0, 1)?.toUpperCase()}</ThemedText>
         </View>
       )}
@@ -44,11 +47,15 @@ export default function Profile() {
       <View style={{ paddingHorizontal: 20 }}>
         <ThemedText
           variant={ThemedTextVariants.default}
-          style={{ fontWeight: 'bold', fontSize: 14 }}>
-          {user?.name} - 2A
+          style={{ fontWeight: "bold", fontSize: 14 }}
+        >
+          {user?.name} {!isTeacher ? "- 2A" : ""}
         </ThemedText>
 
-        <ThemedText variant={ThemedTextVariants.default} style={{ fontSize: 12 }}>
+        <ThemedText
+          variant={ThemedTextVariants.default}
+          style={{ fontSize: 12 }}
+        >
           Instituto Carlos Pellegrini
         </ThemedText>
       </View>
