@@ -6,6 +6,12 @@ import { Renderer } from "expo-three";
 import React, { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from "react-native-gesture-handler";
+import { useSharedValue } from "react-native-reanimated";
+import {
   AmbientLight,
   HemisphereLight,
   OrthographicCamera,
@@ -22,7 +28,7 @@ const onContextCreate = async (
   data: any,
   cleanupRef: React.MutableRefObject<(() => void) | null>
 ) => {
-  const { selected, preloadedModel } = data;
+  const { selected, preloadedModel, rotationY, scale } = data;
   const { drawingBufferWidth: width, drawingBufferHeight: height } = gl;
 
   let isAnimating = true;
@@ -89,22 +95,34 @@ const onContextCreate = async (
 
     if (isModelArray) {
       for (let i = 0; i < selected.models.length; i++) {
-        if (models[i] && selected.models[i]?.animation) {
-          if (selected.models[i].animation?.rotation?.x) {
-            models[i].rotation.x += selected.models[i].animation?.rotation?.x;
-          }
-          if (selected.models[i].animation?.rotation?.y) {
-            models[i].rotation.y += selected.models[i].animation?.rotation?.y;
+        if (models[i]) {
+          // Apply horizontal rotation (Y-axis)
+          models[i].rotation.y = rotationY.value;
+
+          // Apply scale
+          models[i].scale.set(scale.value, scale.value, scale.value);
+
+          // Apply original animation if it exists
+          if (selected.models[i]?.animation) {
+            if (selected.models[i].animation?.rotation?.x) {
+              models[i].rotation.x += selected.models[i].animation.rotation.x;
+            }
           }
         }
       }
     } else {
-      if (models[0] && selected?.animation) {
-        if (selected.animation?.rotation?.x) {
-          models[0].rotation.x += selected.animation?.rotation?.x;
-        }
-        if (selected.animation?.rotation?.y) {
-          models[0].rotation.y += selected.animation?.rotation?.y;
+      if (models[0]) {
+        // Apply horizontal rotation (Y-axis)
+        models[0].rotation.y = rotationY.value;
+
+        // Apply scale
+        models[0].scale.set(scale.value, scale.value, scale.value);
+
+        // Apply original animation if it exists
+        if (selected?.animation) {
+          if (selected.animation?.rotation?.x) {
+            models[0].rotation.x += selected.animation.rotation.x;
+          }
         }
       }
     }
@@ -174,6 +192,12 @@ const Animate = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const cleanupRef = useRef<(() => void) | null>(null);
 
+  const rotationY = useSharedValue(0); // For Y-axis rotation (horizontal)
+  const scale = useSharedValue(1); // For scaling the object (will be initialized from model)
+  const lastPanX = useRef(0);
+  const lastScale = useRef(1);
+  const initialScaleRef = useRef(1); // Track the initial scale for the current model
+
   // Initialize selected model when models are available
   useEffect(() => {
     if (models && models.length > 0 && !selected) {
@@ -191,6 +215,31 @@ const Animate = () => {
       }
     }
   }, [models, isInitialLoading, isModelReady, selected]);
+
+  // Reset rotation and scale when model changes
+  useEffect(() => {
+    rotationY.value = 0;
+    lastPanX.current = 0;
+
+    // Get the initial scale from the model's configuration
+    const currentModel = models[currentIndex];
+    const initialScale = currentModel?.scale?.x || 1;
+    initialScaleRef.current = initialScale;
+    if (initialScale !== scale.value) {
+      scale.value = initialScale;
+      lastScale.current = initialScale;
+    }
+  }, [currentIndex, models]);
+
+  // Initialize scale when model is first selected
+  useEffect(() => {
+    if (selected) {
+      const initialScale = selected.scale?.x || 1;
+      initialScaleRef.current = initialScale;
+      scale.value = initialScale;
+      lastScale.current = initialScale;
+    }
+  }, [selected]);
 
   // Cleanup animation when component unmounts or selected changes
   useEffect(() => {
@@ -273,6 +322,42 @@ const Animate = () => {
     }
   };
 
+  const panGesture = Gesture.Pan()
+    .onStart(() => {
+      // Store the starting position
+      lastPanX.current = 0;
+    })
+    .onUpdate((event) => {
+      // Calculate delta from last position
+      const deltaX = event.translationX - lastPanX.current;
+      // Update rotation based on horizontal pan (sensitivity: 0.01 radians per pixel)
+      rotationY.value += deltaX * 0.01;
+      lastPanX.current = event.translationX;
+    })
+    .onEnd(() => {
+      lastPanX.current = 0;
+    });
+
+  // Define the Pinch Gesture
+  const pinchGesture = Gesture.Pinch()
+    .onStart(() => {
+      // Store the starting scale
+      lastScale.current = scale.value;
+    })
+    .onUpdate((event) => {
+      // Calculate new scale based on pinch factor relative to starting scale
+      const newScale = lastScale.current * event.scale;
+      // Minimum is half of the initial scale, no maximum limit
+      const minScale = initialScaleRef.current * 0.5;
+      scale.value = Math.max(minScale, newScale);
+    })
+    .onEnd(() => {
+      lastScale.current = scale.value;
+    });
+
+  // Combine gestures
+  const composedGesture = Gesture.Simultaneous(panGesture, pinchGesture);
+
   if (models.length === 0) {
     return (
       <View style={styles.container}>
@@ -295,28 +380,46 @@ const Animate = () => {
     <View style={styles.container}>
       <View style={{ flex: 1 }}>
         <CameraView style={{ flex: 1 }} facing={facing}>
-          <ThemedText style={{ textAlign: "center", paddingVertical: 40 }}>
+          <ThemedText
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              textAlign: "center",
+              paddingVertical: 40,
+            }}
+          >
             {models[currentIndex]?.name?.split("-")?.join(" ")?.toUpperCase() ??
               "Loading..."}
           </ThemedText>
 
           {selected && isModelReady(currentIndex) ? (
-            <GLView
-              style={{ flex: 1 }}
-              onContextCreate={(gl) => {
-                // Cleanup previous animation if it exists
-                if (cleanupRef.current) {
-                  cleanupRef.current();
-                }
-                setGL(gl);
-                const preloaded = getPreloadedModel(currentIndex);
-                onContextCreate(
-                  gl,
-                  { selected, preloadedModel: preloaded },
-                  cleanupRef
-                );
-              }}
-            />
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <GestureDetector gesture={composedGesture}>
+                <GLView
+                  style={{ flex: 1 }}
+                  onContextCreate={(gl) => {
+                    // Cleanup previous animation if it exists
+                    if (cleanupRef.current) {
+                      cleanupRef.current();
+                    }
+                    setGL(gl);
+                    const preloaded = getPreloadedModel(currentIndex);
+                    onContextCreate(
+                      gl,
+                      {
+                        selected,
+                        preloadedModel: preloaded,
+                        rotationY,
+                        scale,
+                      },
+                      cleanupRef
+                    );
+                  }}
+                />
+              </GestureDetector>
+            </GestureHandlerRootView>
           ) : null}
 
           {showLoadingOverlay && (

@@ -41,13 +41,6 @@ export default function AppLayout() {
               canGoBack: () => true,
             }}
           />
-          <Stack.Screen
-            name="book/camera"
-            initialParams={{
-              canGoBack: () => true,
-              gestureEnabled: true,
-            }}
-          />
 
           <Stack.Screen
             name="book/request-book"

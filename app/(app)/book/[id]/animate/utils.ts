@@ -32,7 +32,7 @@ export function createModelFromUrls(
       }
     : {
         x: 0,
-        y: 2,
+        y: 0,
         z: 0,
       };
 

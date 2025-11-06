@@ -4,12 +4,12 @@
     "slug": "visualizar",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/logo-visualizar-vertical-positivo.png",
     "scheme": "visualizar",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false
     },
     "android": {
       "adaptiveIcon": {
@@ -27,10 +27,10 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/logo-visualizar-vertical.png",
-          "imageWidth": 200,
+          "image": "./assets/images/logo-visualizar-vertical-positivo.png",
+          "imageWidth": 500,
           "resizeMode": "contain",
-          "backgroundColor": "#120842"
+          "backgroundColor": "#ffffff"
         }
       ],
       "expo-font",
