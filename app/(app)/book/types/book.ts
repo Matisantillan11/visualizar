@@ -4,13 +4,18 @@ export interface Author {
   name: string;
 }
 
-
+export type Animation = {
+  [key: string]: {
+    source: string;
+    texture: string;
+  };
+};
 
 export interface Book {
   id: string;
   name: string;
   description: string;
-  animationFolderName: string;
+  animations: Animation[];
   imageUrl: string;
   is3dEnabled: boolean;
   releaseDate: string | null;

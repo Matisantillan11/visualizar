@@ -7,7 +7,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { modelUrls } from "../animate/constants";
 import { Model } from "../animate/types";
 import { createModelFromUrls } from "../animate/utils";
 
@@ -24,6 +23,9 @@ interface ModelPreloadContextType {
   models: Model[];
   isInitialLoading: boolean;
   setBookId: (bookId: string | string[] | undefined) => void;
+  setModelUrls: (
+    modelUrls: { name: string; model: string; textures: string }[]
+  ) => void;
   currentBookId: string | string[] | undefined;
 }
 
@@ -52,6 +54,9 @@ export const ModelPreloadProvider: React.FC<ModelPreloadProviderProps> = ({
   );
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [models, setModels] = useState<Model[]>([]);
+  const [modelUrls, setModelUrls] = useState<
+    { name: string; model: string; textures: string }[]
+  >([]);
   const [currentBookId, setCurrentBookId] = useState<
     string | string[] | undefined
   >(undefined);
@@ -125,7 +130,7 @@ export const ModelPreloadProvider: React.FC<ModelPreloadProviderProps> = ({
   // Initialize models when bookId is available
   useEffect(() => {
     // If bookId is undefined (not on a book page), don't do anything but keep cache
-    if (!currentBookId) {
+    if (!currentBookId || modelUrls.length === 0) {
       return;
     }
 
@@ -166,7 +171,10 @@ export const ModelPreloadProvider: React.FC<ModelPreloadProviderProps> = ({
     // This ensures the book detail page renders immediately
     const startPreloading = () => {
       // Double-check bookId hasn't changed during the async delay
-      if (currentBookIdRef.current !== currentBookId) {
+      if (
+        currentBookIdRef.current !== currentBookId ||
+        modelUrls.length === 0
+      ) {
         return;
       }
 
@@ -370,7 +378,7 @@ export const ModelPreloadProvider: React.FC<ModelPreloadProviderProps> = ({
     return () => {
       clearTimeout(preloadTimeoutId);
     };
-  }, [currentBookId, cleanup]);
+  }, [currentBookId, modelUrls, cleanup]);
 
   // Don't cleanup on unmount - keep cache for when user returns to the same book
   // Only cleanup when bookId changes (handled in the main useEffect)
@@ -406,6 +414,7 @@ export const ModelPreloadProvider: React.FC<ModelPreloadProviderProps> = ({
         models,
         isInitialLoading,
         setBookId,
+        setModelUrls,
         currentBookId,
       }}
     >

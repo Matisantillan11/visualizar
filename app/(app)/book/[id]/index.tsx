@@ -1,10 +1,5 @@
 import { VerticalLinearGradient } from "@/components/linear-gradient/linear-gradient.component";
-import {
-  Button,
-  ButtonVariants,
-  ThemedText,
-  ThemedTextVariants,
-} from "@/components/UI";
+import { Button, ThemedText, ThemedTextVariants } from "@/components/UI";
 import { BlurView } from "@/components/UI/blur-view/blur-view.component";
 import { theme } from "@/constants";
 import { fetcher } from "@/lib/fetcher";
@@ -18,37 +13,33 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import RateBookBottomSheet from '../../components/rate-book-bottom-sheet';
-import { Book } from '../types/book';
+import Banner from "../../components/banner";
+import { Book } from "../types/book";
 import { useModelPreload } from "./context/model-preload.context";
+import { parseAnimations } from "./utils";
 
 export default function BookDetail() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const requestRef = useRef<number>(0);
-  const { setBookId } = useModelPreload();
+  const { setBookId, setModelUrls } = useModelPreload();
 
   const [book, setBook] = useState<Book | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const bookUrl = `/books/${id}`;
 
-  // Set the bookId in context when the page loads
-  // We don't clear it on unmount to keep the cache for when user returns
-  useEffect(() => {
-    if (id) {
-      setBookId(id);
-    }
-  }, [id, setBookId]);
-
   useEffect(() => {
     const fetchBook = async () => {
       if (id) {
+        setBookId(id);
         const response = await fetcher<Book>({
           url: bookUrl,
         });
 
         if (response) {
           setBook(response);
+          const animations = parseAnimations(response.animations);
+          setModelUrls(animations);
           setIsLoading(false);
         }
       }
@@ -108,6 +99,7 @@ export default function BookDetail() {
           <ActivityIndicator color="white" />
         ) : (
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+            {!book?.is3dEnabled ? <Banner /> : null}
             <View
               style={{
                 alignItems: "center",
@@ -146,35 +138,25 @@ export default function BookDetail() {
             >
               {book?.description?.slice(0, 300)}...
             </ThemedText>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                padding: 32,
-              }}
-            >
-              <Button
-                style={{ width: width / 2.5 }}
-                onPress={() => router.push(`/book/${id}/animate`)}
+            {book?.is3dEnabled && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  padding: 32,
+                }}
               >
-                Ver animaciones
-              </Button>
-              <Button
-                variant={ButtonVariants.outlined}
-                style={{ width: width / 2.5 }}
-                onPress={() => setIsVisible(true)}
-              >
-                Calificar libro
-              </Button>
-            </View>
+                <Button
+                  style={{ width: "100%" }}
+                  onPress={() => router.push(`/book/${id}/animate`)}
+                >
+                  Ver animaciones
+                </Button>
+              </View>
+            )}
           </ScrollView>
         )}
       </View>
-      <RateBookBottomSheet
-        isVisible={isVisible}
-        onClose={() => setIsVisible(false)}
-        bookName={book?.name as string}
-      />
     </VerticalLinearGradient>
   );
 }
