@@ -273,8 +273,7 @@ const Animate = () => {
     }
   };
 
-  // Show loading if initial models aren't ready yet
-  if (isInitialLoading && currentIndex === 0 && models.length > 0) {
+  if (models.length === 0) {
     return (
       <View style={styles.container}>
         <View
@@ -287,18 +286,21 @@ const Animate = () => {
     );
   }
 
+  const showLoadingOverlay =
+    (isInitialLoading && currentIndex === 0) ||
+    !selected ||
+    !isModelReady(currentIndex);
+
   return (
     <View style={styles.container}>
       <View style={{ flex: 1 }}>
-        {selected && isModelReady(currentIndex) ? (
-          <CameraView style={{ flex: 1 }} facing={facing}>
-            <ThemedText style={{ textAlign: "center", paddingVertical: 40 }}>
-              {models[currentIndex]?.name
-                ?.split("-")
-                ?.join(" ")
-                ?.toUpperCase() || "Loading..."}
-            </ThemedText>
+        <CameraView style={{ flex: 1 }} facing={facing}>
+          <ThemedText style={{ textAlign: "center", paddingVertical: 40 }}>
+            {models[currentIndex]?.name?.split("-")?.join(" ")?.toUpperCase() ??
+              "Loading..."}
+          </ThemedText>
 
+          {selected && isModelReady(currentIndex) ? (
             <GLView
               style={{ flex: 1 }}
               onContextCreate={(gl) => {
@@ -315,15 +317,28 @@ const Animate = () => {
                 );
               }}
             />
-          </CameraView>
-        ) : (
-          <View
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-          >
-            <Text>Loading model...</Text>
-            <ActivityIndicator size="large" style={{ marginTop: 20 }} />
-          </View>
-        )}
+          ) : null}
+
+          {showLoadingOverlay && (
+            <View
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "rgba(0, 0, 0, 0.3)",
+              }}
+            >
+              <Text style={{ color: "white", marginBottom: 10 }}>
+                Loading model...
+              </Text>
+              <ActivityIndicator size="large" color="white" />
+            </View>
+          )}
+        </CameraView>
 
         <BottomNavigation
           handlePrevious={handlePrevious}
