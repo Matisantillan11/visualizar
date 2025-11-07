@@ -179,9 +179,11 @@ export const loadModel = async function (item: any) {
   }
   console.log(`[loadModel] -> Textures done applied...`);
 
-  if (item.scale) {
-    obj.scale.set(item.scale.x, item.scale.y, item.scale.z);
-  }
+  // Don't apply scale here - let the gesture system handle scaling
+  // The scale from item.scale will be used to initialize the gesture scale
+  // This prevents double-scaling issues where the model is scaled in loadModel
+  // and then scaled again by the gesture system
+  
   if (item.position) {
     obj.position.set(item.position.x, item.position.y, item.position.z);
   }

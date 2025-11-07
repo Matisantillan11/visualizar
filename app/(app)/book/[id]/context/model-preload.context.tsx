@@ -26,6 +26,7 @@ interface ModelPreloadContextType {
   setModelUrls: (
     modelUrls: { name: string; model: string; textures: string }[]
   ) => void;
+  loadModelOnDemand: (index: number) => Promise<void>;
   currentBookId: string | string[] | undefined;
 }
 
@@ -127,7 +128,8 @@ export const ModelPreloadProvider: React.FC<ModelPreloadProviderProps> = ({
     isCleaningRef.current = false;
   }, []);
 
-  // Initialize models when bookId is available
+  // Initialize model definitions when bookId and modelUrls are available
+  // This only creates the model definitions, doesn't load them
   useEffect(() => {
     // If bookId is undefined (not on a book page), don't do anything but keep cache
     if (!currentBookId || modelUrls.length === 0) {
@@ -139,246 +141,105 @@ export const ModelPreloadProvider: React.FC<ModelPreloadProviderProps> = ({
       currentBookIdRef.current !== undefined &&
       currentBookIdRef.current !== currentBookId;
 
-    // If we already have models loaded for this book, don't reload them
-    const isSameBook = currentBookIdRef.current === currentBookId;
-    if (isSameBook && models.length > 0 && preloadedModels.size > 0) {
-      // Already loaded, just ensure isInitialLoading is false if models are ready
-      if (isInitialLoadingRef.current) {
-        const hasAtLeastOneReady = models.some((_, idx) =>
-          preloadedModelsRef.current.has(idx)
-        );
-        if (hasAtLeastOneReady) {
-          setIsInitialLoading(false);
-          isInitialLoadingRef.current = false;
-        }
-      }
-      return;
-    }
-
     // If book changed, clean up previous cache first
     if (bookChanged) {
       cleanup();
     }
 
-    // Update ref to current bookId (always update, even if book changed)
+    // Update ref to current bookId
     currentBookIdRef.current = currentBookId;
 
-    // Reset loading state to ensure fresh start for new book
-    setIsInitialLoading(true);
-    isInitialLoadingRef.current = true;
+    // Create model definitions from URLs (no loading yet)
+    const modelDefinitions = modelUrls
+      .map((u) => createModelFromUrls(u.model, u.textures))
+      .filter((m) => m !== null) as Model[];
 
-    // Defer model preloading to next tick to avoid blocking rendering
-    // This ensures the book detail page renders immediately
-    const startPreloading = () => {
-      // Double-check bookId hasn't changed during the async delay
-      if (
-        currentBookIdRef.current !== currentBookId ||
-        modelUrls.length === 0
-      ) {
+    if (modelDefinitions.length === 0) {
+      setModels([]);
+      setIsInitialLoading(false);
+      isInitialLoadingRef.current = false;
+      return;
+    }
+
+    // Set model definitions (but don't load them)
+    setModels(modelDefinitions);
+    setIsInitialLoading(false);
+    isInitialLoadingRef.current = false;
+  }, [currentBookId, modelUrls, cleanup]);
+
+  // Function to load a model on-demand
+  const loadModelOnDemand = useCallback(
+    async (index: number) => {
+      // Prevent duplicate loading
+      if (loadingRef.current.has(index) || preloadedModels.has(index)) {
         return;
       }
 
-      // Create model definitions from URLs
-      const modelDefinitions = modelUrls
-        .map((u) => createModelFromUrls(u.model, u.textures))
-        .filter((m) => m !== null) as Model[];
-
-      if (modelDefinitions.length === 0) {
-        setModels([]);
-        setIsInitialLoading(false);
-        isInitialLoadingRef.current = false;
-        return;
-      }
-
-      // Double-check again before setting state
+      // Check if book changed during loading
       if (currentBookIdRef.current !== currentBookId) {
         return;
       }
 
-      setModels(modelDefinitions);
-      setIsInitialLoading(true);
-      isInitialLoadingRef.current = true;
+      // Check if we have model definitions
+      if (!models || models.length === 0 || !models[index]) {
+        return;
+      }
 
-      // Priority: Define which models to load first
-      const priorityModels = modelDefinitions.slice(
-        0,
-        Math.min(3, modelDefinitions.length)
-      );
+      const model = models[index];
 
-      const preloadModel = async (index: number, model: Model) => {
-        // Prevent duplicate loading
-        if (loadingRef.current.has(index) || preloadedModels.has(index)) {
-          return;
-        }
+      setLoadingProgress((prev) => {
+        const newMap = new Map(prev).set(index, true);
+        loadingProgressRef.current = newMap;
+        return newMap;
+      });
 
-        // Check if book changed during loading
+      try {
+        const loadPromise = loadModel(model);
+        loadingRef.current.set(index, loadPromise);
+
+        const loadedModel = await loadPromise;
+
+        // Double-check book hasn't changed
         if (currentBookIdRef.current !== currentBookId) {
+          // Dispose of loaded model if book changed
+          loadedModel.traverse?.((object: any) => {
+            if (object.geometry) object.geometry.dispose?.();
+            if (object.material) {
+              if (Array.isArray(object.material)) {
+                object.material.forEach((mat: any) => {
+                  if (mat.map) mat.map.dispose?.();
+                  mat.dispose?.();
+                });
+              } else {
+                if (object.material.map) object.material.map.dispose?.();
+                object.material.dispose?.();
+              }
+            }
+          });
           return;
         }
 
+        setPreloadedModels((prev) => {
+          const newMap = new Map(prev);
+          newMap.set(index, { model: loadedModel, originalModel: model });
+          // Update ref immediately for synchronous access
+          preloadedModelsRef.current = newMap;
+          return newMap;
+        });
+      } catch (error) {
+        console.error(`Failed to load model ${index}:`, error);
+      } finally {
         setLoadingProgress((prev) => {
-          const newMap = new Map(prev).set(index, true);
+          const newMap = new Map(prev);
+          newMap.delete(index);
           loadingProgressRef.current = newMap;
           return newMap;
         });
-
-        try {
-          const loadPromise = loadModel(model);
-          loadingRef.current.set(index, loadPromise);
-
-          const loadedModel = await loadPromise;
-
-          // Double-check book hasn't changed
-          if (currentBookIdRef.current !== currentBookId) {
-            // Dispose of loaded model if book changed
-            loadedModel.traverse?.((object: any) => {
-              if (object.geometry) object.geometry.dispose?.();
-              if (object.material) {
-                if (Array.isArray(object.material)) {
-                  object.material.forEach((mat: any) => {
-                    if (mat.map) mat.map.dispose?.();
-                    mat.dispose?.();
-                  });
-                } else {
-                  if (object.material.map) object.material.map.dispose?.();
-                  object.material.dispose?.();
-                }
-              }
-            });
-            return;
-          }
-
-          setPreloadedModels((prev) => {
-            const newMap = new Map(prev);
-            newMap.set(index, { model: loadedModel, originalModel: model });
-            // Update ref immediately for synchronous access
-            preloadedModelsRef.current = newMap;
-
-            // If this is a priority model, check if initial loading is complete
-            if (index < priorityModels.length) {
-              // Check immediately if all priority models are loaded
-              const allPriorityLoaded = priorityModels.every((_, idx) => {
-                return newMap.has(idx);
-              });
-              const noneStillLoading = priorityModels.every((_, idx) => {
-                return (
-                  !loadingProgressRef.current.has(idx) &&
-                  !loadingRef.current.has(idx)
-                );
-              });
-
-              if (
-                allPriorityLoaded &&
-                noneStillLoading &&
-                isInitialLoadingRef.current
-              ) {
-                setIsInitialLoading(false);
-                isInitialLoadingRef.current = false;
-              }
-            }
-
-            return newMap;
-          });
-        } catch (error) {
-          console.error(`Failed to preload model ${index}:`, error);
-        } finally {
-          setLoadingProgress((prev) => {
-            const newMap = new Map(prev);
-            newMap.delete(index);
-            loadingProgressRef.current = newMap;
-            return newMap;
-          });
-          loadingRef.current.delete(index);
-        }
-      };
-
-      // Priority: Load first 3 models immediately
-      priorityModels.forEach((model, index) => {
-        preloadModel(index, model);
-      });
-
-      // After priority models start, load the rest in background
-      if (modelDefinitions.length > 3) {
-        const backgroundModels = modelDefinitions.slice(3);
-        backgroundModels.forEach((model, offset) => {
-          const index = 3 + offset;
-          // Small delay to prioritize first 3
-          setTimeout(() => {
-            if (currentBookIdRef.current === currentBookId) {
-              preloadModel(index, model);
-            }
-          }, 100 * offset); // Stagger background loading
-        });
+        loadingRef.current.delete(index);
       }
-
-      // Check if initial loading is complete
-      let checkInterval: ReturnType<typeof setInterval> | null = null;
-      const checkInitialLoading = () => {
-        // Use refs to get current state values
-        const currentModels = preloadedModelsRef.current;
-        const currentLoadingProgress = loadingProgressRef.current;
-
-        if (currentBookIdRef.current !== currentBookId) {
-          if (checkInterval) {
-            clearInterval(checkInterval);
-            checkInterval = null;
-          }
-          return;
-        }
-
-        // Check if all priority models are actually loaded (not just started)
-        const allPriorityLoaded = priorityModels.every((_, index) => {
-          return currentModels.has(index);
-        });
-
-        // Check if none of the priority models are still in loading progress
-        const noneStillLoading = priorityModels.every((_, index) => {
-          return (
-            !currentLoadingProgress.has(index) && !loadingRef.current.has(index)
-          );
-        });
-
-        if (allPriorityLoaded && noneStillLoading) {
-          setIsInitialLoading(false);
-          isInitialLoadingRef.current = false;
-          if (checkInterval) {
-            clearInterval(checkInterval);
-            checkInterval = null;
-          }
-        }
-      };
-
-      // Check periodically if initial models are ready
-      checkInterval = setInterval(checkInitialLoading, 100);
-
-      // Safety timeout: if initial loading takes more than 30 seconds, mark as complete
-      // This prevents infinite loading if models fail to load
-      const safetyTimeoutId = setTimeout(() => {
-        if (isInitialLoadingRef.current) {
-          // Check if at least one model is ready
-          const hasAtLeastOne = priorityModels.some((_, idx) =>
-            preloadedModelsRef.current.has(idx)
-          );
-          if (hasAtLeastOne) {
-            setIsInitialLoading(false);
-            isInitialLoadingRef.current = false;
-          }
-        }
-      }, 30000);
-
-      return () => {
-        if (checkInterval) clearInterval(checkInterval);
-        clearTimeout(safetyTimeoutId);
-      };
-    };
-
-    // Start preloading in the next tick to avoid blocking
-    const preloadTimeoutId = setTimeout(startPreloading, 0);
-
-    return () => {
-      clearTimeout(preloadTimeoutId);
-    };
-  }, [currentBookId, modelUrls, cleanup]);
+    },
+    [currentBookId, models, preloadedModels]
+  );
 
   // Don't cleanup on unmount - keep cache for when user returns to the same book
   // Only cleanup when bookId changes (handled in the main useEffect)
@@ -415,6 +276,7 @@ export const ModelPreloadProvider: React.FC<ModelPreloadProviderProps> = ({
         isInitialLoading,
         setBookId,
         setModelUrls,
+        loadModelOnDemand,
         currentBookId,
       }}
     >

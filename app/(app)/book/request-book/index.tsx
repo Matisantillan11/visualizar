@@ -8,16 +8,47 @@ import {
 } from "@/components/UI";
 import { StyleSheet, View } from "react-native";
 
+import { useAuthContext } from "@/app/(auth)/hooks/useAuthContext";
 import { VerticalLinearGradient } from "@/components/linear-gradient/linear-gradient.component";
 import { theme } from "@/constants";
+import { fetcher } from "@/lib/fetcher";
 import React, { useState } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 
 export default function RequestBook() {
+  const { user } = useAuthContext();
+
   const [bookName, setBookName] = useState<string>("");
   const [authorName, setAuthorName] = useState<string>("");
   const [comments, setComments] = useState<string>("");
-  const [checked, setChecked] = React.useState("first");
+  const [checked, setChecked] = React.useState("all");
+
+  const onSendRequest = async () => {
+    try {
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      if (!bookName || !authorName) {
+        throw new Error("Book name and author name are required");
+      }
+
+      const response = await fetcher<any>({
+        url: "/books/request",
+        init: {
+          method: "POST",
+          body: JSON.stringify({
+            bookName,
+            authorName,
+            comments,
+            animations: checked,
+          }),
+        },
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <VerticalLinearGradient>
@@ -61,22 +92,22 @@ export default function RequestBook() {
 
           <View style={{ gap: 16 }}>
             <RadioButton
-              value="first"
-              status={checked === "first" ? "checked" : "unchecked"}
-              onPress={() => setChecked("first")}
+              value="all"
+              status={checked === "all" ? "checked" : "unchecked"}
+              onPress={() => setChecked("all")}
               label="Todas las animaciones"
             />
             <RadioButton
-              value="second"
-              status={checked === "second" ? "checked" : "unchecked"}
-              onPress={() => setChecked("second")}
+              value="main-characters"
+              status={checked === "main-characters" ? "checked" : "unchecked"}
+              onPress={() => setChecked("main-characters")}
               label="Solo caracteres principales"
             />
 
             <RadioButton
-              value="third"
-              status={checked === "third" ? "checked" : "unchecked"}
-              onPress={() => setChecked("third")}
+              value="curious-data"
+              status={checked === "curious-data" ? "checked" : "unchecked"}
+              onPress={() => setChecked("curious-data")}
               label="Solo datos curiosos"
             />
           </View>

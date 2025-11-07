@@ -14,9 +14,9 @@ export function createModelFromUrls(
   const fileName = fileNameWithExt?.replace(".obj", "");
   const scale = fileName?.includes("dato-curioso")
     ? {
-        x: 0.7,
-        y: 0.7,
-        z: 0.7,
+        x: 0.6,
+        y: 0.6,
+        z: 0.6,
       }
     : {
         x: 5,
@@ -27,7 +27,7 @@ export function createModelFromUrls(
   const position = fileName?.includes("dato-curioso")
     ? {
         x: 0,
-        y: 3,
+        y: 1,
         z: 0,
       }
     : {

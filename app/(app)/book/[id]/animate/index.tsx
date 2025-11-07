@@ -3,7 +3,7 @@ import { loadModel } from "@/utils/3d";
 import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
 import { ExpoWebGLRenderingContext, GLView } from "expo-gl";
 import { Renderer } from "expo-three";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import {
   Gesture,
@@ -68,10 +68,21 @@ const onContextCreate = async (
 
   let models: any[] = [];
 
+  const getInitialScale = (modelDef: Model) => {
+    if (modelDef.name?.includes("dato-curioso")) {
+      return 0.6;
+    }
+    return modelDef.scale?.x || 1;
+  };
+
   // Use preloaded model if available, otherwise load on demand
   if (preloadedModel) {
     // Clone the preloaded model to avoid issues with multiple scenes
     const model = preloadedModel.model.clone();
+    // Apply initial scale immediately (scale is controlled by gesture system)
+    const initialScale = getInitialScale(preloadedModel.originalModel);
+    model.scale.set(initialScale, initialScale, initialScale);
+    scale.value = initialScale;
     scene.add(model);
     models.push(model);
   } else {
@@ -80,11 +91,21 @@ const onContextCreate = async (
       for (let i = 0; i < selected.models.length; i++) {
         const modelItem = selected.models[i];
         const model = await loadModel(modelItem);
+        const initialScale = getInitialScale(modelItem);
+        model.scale.set(initialScale, initialScale, initialScale);
+
+        if (i === 0) {
+          scale.value = initialScale;
+        }
+
         scene.add(model);
         models.push(model);
       }
     } else {
       const model = await loadModel(selected);
+      const initialScale = getInitialScale(selected);
+      model.scale.set(initialScale, initialScale, initialScale);
+      scale.value = initialScale;
       scene.add(model);
       models.push(model);
     }
@@ -183,8 +204,13 @@ const onContextCreate = async (
 };
 
 const Animate = () => {
-  const { models, isModelReady, getPreloadedModel, isInitialLoading } =
-    useModelPreload();
+  const {
+    models,
+    isModelReady,
+    getPreloadedModel,
+    isInitialLoading,
+    loadModelOnDemand,
+  } = useModelPreload();
   const [selected, setSelected] = useState<Model | null>(null);
   const [gl, setGL] = useState<ExpoWebGLRenderingContext | null>(null);
   const [permission, requestPermission] = useCameraPermissions();
@@ -198,48 +224,45 @@ const Animate = () => {
   const lastScale = useRef(1);
   const initialScaleRef = useRef(1); // Track the initial scale for the current model
 
-  // Initialize selected model when models are available
+  // Initialize selected model when models are available and load on demand
   useEffect(() => {
     if (models && models.length > 0 && !selected) {
-      // Wait for first model to be ready if initial loading is still happening
-      if (isInitialLoading) {
-        const checkReady = setInterval(() => {
-          if (isModelReady(0)) {
-            setSelected(models[0]);
-            clearInterval(checkReady);
-          }
-        }, 100);
-        return () => clearInterval(checkReady);
-      } else {
-        setSelected(models[0]);
+      // Load the first model on demand
+      if (!isModelReady(0)) {
+        loadModelOnDemand(0);
       }
+
+      // Wait for first model to be ready
+      const checkReady = setInterval(() => {
+        if (isModelReady(0)) {
+          setSelected(models[0]);
+          // Initialize scale for first model
+          const initialScale = models[0]?.scale?.x || 0.6;
+          initialScaleRef.current = initialScale;
+          scale.value = initialScale;
+          lastScale.current = initialScale;
+          clearInterval(checkReady);
+        }
+      }, 100);
+      return () => clearInterval(checkReady);
     }
-  }, [models, isInitialLoading, isModelReady, selected]);
+  }, [models, isModelReady, selected, loadModelOnDemand]);
 
   // Reset rotation and scale when model changes
   useEffect(() => {
     rotationY.value = 0;
     lastPanX.current = 0;
 
-    // Get the initial scale from the model's configuration
+    // Get the initial scale from the current model's configuration
+    // This ensures each model uses its own configured scale (0.6 for dato-curioso, 5 for others)
     const currentModel = models[currentIndex];
-    const initialScale = currentModel?.scale?.x || 1;
+    const initialScale = currentModel.name.includes("dato-curioso")
+      ? 0.6
+      : currentModel?.scale?.x || 1;
     initialScaleRef.current = initialScale;
-    if (initialScale !== scale.value) {
-      scale.value = initialScale;
-      lastScale.current = initialScale;
-    }
+    scale.value = initialScale;
+    lastScale.current = initialScale;
   }, [currentIndex, models]);
-
-  // Initialize scale when model is first selected
-  useEffect(() => {
-    if (selected) {
-      const initialScale = selected.scale?.x || 1;
-      initialScaleRef.current = initialScale;
-      scale.value = initialScale;
-      lastScale.current = initialScale;
-    }
-  }, [selected]);
 
   // Cleanup animation when component unmounts or selected changes
   useEffect(() => {
@@ -258,6 +281,56 @@ const Animate = () => {
       }
     };
   }, []);
+
+  // Create gestures - recreate when currentIndex changes to ensure they work for all models
+  // MUST be before any conditional returns to follow Rules of Hooks
+  const panGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .onStart(() => {
+          // Store the starting position
+          lastPanX.current = 0;
+        })
+        .onUpdate((event) => {
+          // Calculate delta from last position
+          const deltaX = event.translationX - lastPanX.current;
+          // Update rotation based on horizontal pan (sensitivity: 0.01 radians per pixel)
+          rotationY.value += deltaX * 0.01;
+          lastPanX.current = event.translationX;
+        })
+        .onEnd(() => {
+          lastPanX.current = 0;
+        }),
+    [currentIndex, rotationY]
+  );
+
+  // Define the Pinch Gesture
+  const pinchGesture = useMemo(
+    () =>
+      Gesture.Pinch()
+        .onStart(() => {
+          // Store the starting scale
+          lastScale.current = scale.value;
+        })
+        .onUpdate((event) => {
+          // Calculate new scale based on pinch factor relative to starting scale
+          const newScale = lastScale.current * event.scale;
+
+          // Minimum is half of the initial scale, no maximum limit
+          const minScale = initialScaleRef.current * 0.5;
+          scale.value = Math.max(minScale, newScale);
+        })
+        .onEnd(() => {
+          lastScale.current = scale.value;
+        }),
+    [currentIndex, scale, initialScaleRef]
+  );
+
+  // Combine gestures
+  const composedGesture = useMemo(
+    () => Gesture.Simultaneous(panGesture, pinchGesture),
+    [panGesture, pinchGesture]
+  );
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -279,23 +352,21 @@ const Animate = () => {
     setCurrentIndex(newIndex);
     setSelected(null);
 
-    // Check if model is ready before showing
-    if (isModelReady(newIndex)) {
-      setTimeout(() => {
-        setSelected(models[newIndex]);
-      }, 200);
-    } else {
-      // Wait for model to be ready
-      const checkReady = setInterval(() => {
-        if (isModelReady(newIndex)) {
-          setSelected(models[newIndex]);
-          clearInterval(checkReady);
-        }
-      }, 100);
-
-      // Cleanup interval after 30 seconds (shouldn't take that long, but safety)
-      setTimeout(() => clearInterval(checkReady), 30000);
+    // Load model on demand if not already loaded
+    if (!isModelReady(newIndex)) {
+      loadModelOnDemand(newIndex);
     }
+
+    // Wait for model to be ready
+    const checkReady = setInterval(() => {
+      if (isModelReady(newIndex)) {
+        setSelected(models[newIndex]);
+        clearInterval(checkReady);
+      }
+    }, 100);
+
+    // Cleanup interval after 30 seconds (shouldn't take that long, but safety)
+    setTimeout(() => clearInterval(checkReady), 30000);
   };
 
   const handleNext = () => {
@@ -303,60 +374,22 @@ const Animate = () => {
     setCurrentIndex(newIndex);
     setSelected(null);
 
-    // Check if model is ready before showing
-    if (isModelReady(newIndex)) {
-      setTimeout(() => {
-        setSelected(models[newIndex]);
-      }, 200);
-    } else {
-      // Wait for model to be ready
-      const checkReady = setInterval(() => {
-        if (isModelReady(newIndex)) {
-          setSelected(models[newIndex]);
-          clearInterval(checkReady);
-        }
-      }, 100);
-
-      // Cleanup interval after 30 seconds (shouldn't take that long, but safety)
-      setTimeout(() => clearInterval(checkReady), 30000);
+    // Load model on demand if not already loaded
+    if (!isModelReady(newIndex)) {
+      loadModelOnDemand(newIndex);
     }
+
+    // Wait for model to be ready
+    const checkReady = setInterval(() => {
+      if (isModelReady(newIndex)) {
+        setSelected(models[newIndex]);
+        clearInterval(checkReady);
+      }
+    }, 100);
+
+    // Cleanup interval after 30 seconds (shouldn't take that long, but safety)
+    setTimeout(() => clearInterval(checkReady), 30000);
   };
-
-  const panGesture = Gesture.Pan()
-    .onStart(() => {
-      // Store the starting position
-      lastPanX.current = 0;
-    })
-    .onUpdate((event) => {
-      // Calculate delta from last position
-      const deltaX = event.translationX - lastPanX.current;
-      // Update rotation based on horizontal pan (sensitivity: 0.01 radians per pixel)
-      rotationY.value += deltaX * 0.01;
-      lastPanX.current = event.translationX;
-    })
-    .onEnd(() => {
-      lastPanX.current = 0;
-    });
-
-  // Define the Pinch Gesture
-  const pinchGesture = Gesture.Pinch()
-    .onStart(() => {
-      // Store the starting scale
-      lastScale.current = scale.value;
-    })
-    .onUpdate((event) => {
-      // Calculate new scale based on pinch factor relative to starting scale
-      const newScale = lastScale.current * event.scale;
-      // Minimum is half of the initial scale, no maximum limit
-      const minScale = initialScaleRef.current * 0.5;
-      scale.value = Math.max(minScale, newScale);
-    })
-    .onEnd(() => {
-      lastScale.current = scale.value;
-    });
-
-  // Combine gestures
-  const composedGesture = Gesture.Simultaneous(panGesture, pinchGesture);
 
   if (models.length === 0) {
     return (
@@ -371,33 +404,41 @@ const Animate = () => {
     );
   }
 
-  const showLoadingOverlay =
-    (isInitialLoading && currentIndex === 0) ||
-    !selected ||
-    !isModelReady(currentIndex);
+  const showLoadingOverlay = !selected || !isModelReady(currentIndex);
 
   return (
     <View style={styles.container}>
       <View style={{ flex: 1 }}>
         <CameraView style={{ flex: 1 }} facing={facing}>
-          <ThemedText
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              textAlign: "center",
-              paddingVertical: 40,
-            }}
-          >
-            {models[currentIndex]?.name?.split("-")?.join(" ")?.toUpperCase() ??
-              "Loading..."}
-          </ThemedText>
+          {showLoadingOverlay ? null : (
+            <ThemedText
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                textAlign: "center",
+                paddingVertical: 40,
+              }}
+            >
+              {models[currentIndex]?.name
+                ?.split("-")
+                ?.join(" ")
+                ?.toUpperCase() ?? "Loading..."}
+            </ThemedText>
+          )}
 
           {selected && isModelReady(currentIndex) ? (
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <GestureDetector gesture={composedGesture}>
+            <GestureHandlerRootView
+              key={`gesture-root-${currentIndex}`}
+              style={{ flex: 1 }}
+            >
+              <GestureDetector
+                key={`gesture-${currentIndex}`}
+                gesture={composedGesture}
+              >
                 <GLView
+                  key={`model-${currentIndex}`}
                   style={{ flex: 1 }}
                   onContextCreate={(gl) => {
                     // Cleanup previous animation if it exists
@@ -406,6 +447,7 @@ const Animate = () => {
                     }
                     setGL(gl);
                     const preloaded = getPreloadedModel(currentIndex);
+                    // Always use the current shared values to ensure gestures work for all models
                     onContextCreate(
                       gl,
                       {
