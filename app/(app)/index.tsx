@@ -1,17 +1,21 @@
-import { Container, ThemedText, ThemedTextVariants } from "@/components/UI";
+import {
+  Container,
+  Dropdown,
+  ThemedText,
+  ThemedTextVariants,
+} from "@/components/UI";
 import { theme } from "@/constants";
 import { fetcher } from "@/lib/fetcher";
-import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { ActivityIndicator } from 'react-native-paper';
-import { useAuthContext } from '../(auth)/hooks/useAuthContext';
-import { Role } from '../(auth)/interfaces';
-import { Book } from './book/types/book';
-import CardAligmentButton from './components/card-aligment-button/card-aligment-button.component';
-import Card from './components/card/card.component';
-import Dropdown from './components/dropdown';
-import { EmptyState } from './components/empty-state';
-import useBooksAligment, { BooksAligment } from './hooks/use-books-aligment';
+import { useEffect, useState } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator } from "react-native-paper";
+import { useAuthContext } from "../(auth)/hooks/useAuthContext";
+import { Role } from "../(auth)/interfaces";
+import { Book } from "./book/types/book";
+import CardAligmentButton from "./components/card-aligment-button/card-aligment-button.component";
+import Card from "./components/card/card.component";
+import { EmptyState } from "./components/empty-state";
+import useBooksAligment, { BooksAligment } from "./hooks/use-books-aligment";
 
 export default function app() {
   const { bookAligment, flexDirection, setDirection } = useBooksAligment();
@@ -20,10 +24,10 @@ export default function app() {
   const [isLoadingCourses, setIsLoadingCourses] = useState<boolean>(true);
   const [books, setBook] = useState<Array<Book> | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [selectedGrade, setSelectedGrade] = useState('all');
-  const [courses, setCourses] = useState<Array<{ label: string; value: string }>>([
-    { label: 'Todos', value: 'all' },
-  ]);
+  const [selectedGrade, setSelectedGrade] = useState("all");
+  const [courses, setCourses] = useState<
+    Array<{ label: string; value: string }>
+  >([{ label: "Todos", value: "all" }]);
 
   const isHorizontal = bookAligment === BooksAligment.horizontal;
   const isTeacher = user?.role === Role.TEACHER;
@@ -60,9 +64,11 @@ export default function app() {
       if (isLoadingCourses) return;
 
       try {
-        const isAllGradesSelected = selectedGrade === 'all';
-        const finalBookUrl = isAllGradesSelected ? booksUrl : `${booksUrl}/course/${selectedGrade}`;
-        const bookResponse = await fetcher<any[]>({
+        const isAllGradesSelected = selectedGrade === "all";
+        const finalBookUrl = isAllGradesSelected
+          ? booksUrl
+          : `${booksUrl}/course/${selectedGrade}`;
+        const bookResponse = await fetcher<Book[]>({
           url: finalBookUrl,
         });
 
@@ -85,10 +91,11 @@ export default function app() {
         style={{
           marginTop: -32,
           marginBottom: 21,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
         <ThemedText style={styles.title} variant={ThemedTextVariants.default}>
           Todos los libros
         </ThemedText>
@@ -100,7 +107,7 @@ export default function app() {
             options={courses || []}
           />
         ) : (
-          <View style={{ flexDirection: 'row', gap: 4 }}>
+          <View style={{ flexDirection: "row", gap: 4 }}>
             <CardAligmentButton
               iconName="grid-outline"
               size={20}
@@ -120,24 +127,29 @@ export default function app() {
       </View>
       <ScrollView
         contentContainerStyle={{ paddingVertical: 16 }}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <View
           style={{
             flexDirection,
-            flexWrap: 'wrap',
+            flexWrap: "wrap",
             gap: books?.length ? 28 : 0,
-          }}>
+          }}
+        >
           {isLoading || isLoadingCourses ? (
             <View
               style={{
                 flex: 1,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <ActivityIndicator color="white" />
             </View>
           ) : books?.length ? (
-            books?.map((book) => <Card isHorizontal={isHorizontal} book={book} key={book.id} />)
+            books?.map((book) => (
+              <Card isHorizontal={isHorizontal} book={book} key={book.id} />
+            ))
           ) : (
             <EmptyState />
           )}

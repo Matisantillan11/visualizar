@@ -1,6 +1,11 @@
 import { VerticalLinearGradient } from "@/components/linear-gradient/linear-gradient.component";
-import { Button, ThemedText, ThemedTextVariants } from "@/components/UI";
-import { BlurView } from "@/components/UI/blur-view/blur-view.component";
+import {
+  Banner,
+  BlurView,
+  Button,
+  ThemedText,
+  ThemedTextVariants,
+} from "@/components/UI";
 import { theme } from "@/constants";
 import { fetcher } from "@/lib/fetcher";
 import { ExpoWebGLRenderingContext, GLView } from "expo-gl";
@@ -13,7 +18,6 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import Banner from "../../components/banner";
 import { Book } from "../types/book";
 import { useModelPreload } from "./context/model-preload.context";
 import { parseAnimations } from "./utils";

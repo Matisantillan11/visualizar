@@ -22,6 +22,11 @@ export default function Menu({ isVisible, onClose }: { isVisible: boolean; onClo
     onClose();
   };
 
+  const navigateToRequests = () => {
+    router.navigate("/requests");
+    onClose();
+  };
+
   const handleLogOut = () => {
     handleSignOut();
     onClose();
@@ -35,11 +40,19 @@ export default function Menu({ isVisible, onClose }: { isVisible: boolean; onClo
             <Profile />
 
             {isTeacher && (
-              <NavbarLink
-                source="book-outline"
-                linkText="Solicitar libro"
-                onPress={navigateToRequestBook}
-              />
+              <>
+                <NavbarLink
+                  source="book-outline"
+                  linkText="Solicitar libro"
+                  onPress={navigateToRequestBook}
+                />
+
+                <NavbarLink
+                  source="history"
+                  linkText="Mis solicitudes"
+                  onPress={navigateToRequests}
+                />
+              </>
             )}
 
             <NavbarLink
@@ -47,6 +60,7 @@ export default function Menu({ isVisible, onClose }: { isVisible: boolean; onClo
               linkText="FAQs"
               onPress={navigateToFaqs}
             />
+
             <NavbarLink
               source="exit-to-app"
               linkText="Cerrar Sesión"

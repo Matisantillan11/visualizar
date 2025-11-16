@@ -2,6 +2,7 @@ import {
   Button,
   ButtonVariants,
   DataSecurityIllustration,
+  Dropdown,
   Input,
   RadioButton,
   ThemedText,
@@ -12,17 +13,46 @@ import { useAuthContext } from "@/app/(auth)/hooks/useAuthContext";
 import { VerticalLinearGradient } from "@/components/linear-gradient/linear-gradient.component";
 import { theme } from "@/constants";
 import { fetcher } from "@/lib/fetcher";
-import React, { useState } from "react";
+import { useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
 import { ScrollView } from "react-native-gesture-handler";
+import { getAnimationsSelected } from "./helpers";
 
 export default function RequestBook() {
   const { user } = useAuthContext();
+  const router = useRouter();
+
+  const [selectedGrade, setSelectedGrade] = useState<string>("");
+  const [courses, setCourses] = useState<
+    Array<{ label: string; value: string }>
+  >([]);
 
   const [bookName, setBookName] = useState<string>("");
   const [authorName, setAuthorName] = useState<string>("");
   const [comments, setComments] = useState<string>("");
   const [checked, setChecked] = React.useState("all");
 
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const courseResponse = await fetcher<any[]>({
+          url: `/courses/teacher/${user?.teacherId}`,
+        });
+
+        if (courseResponse) {
+          const courses = courseResponse.map((course) => ({
+            label: course.name,
+            value: course.id,
+          }));
+          setCourses((prevCourses) => [...prevCourses, ...courses]);
+        }
+      } catch (error) {
+        console.log({ error });
+      }
+    };
+
+    fetchCourses();
+  }, []);
   const onSendRequest = async () => {
     try {
       if (!user) {
@@ -33,18 +63,34 @@ export default function RequestBook() {
         throw new Error("Book name and author name are required");
       }
 
+      console.log({
+        courseIds: [selectedGrade],
+        title: bookName,
+        authorName,
+        comments,
+        animations: getAnimationsSelected(checked),
+      });
+
       const response = await fetcher<any>({
         url: "/books/request",
         init: {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
-            bookName,
+            courseIds: [selectedGrade],
+            title: bookName,
             authorName,
             comments,
-            animations: checked,
+            animations: getAnimationsSelected(checked),
           }),
         },
       });
+
+      if ("id" in response) {
+        router.navigate(`/(app)`);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -78,6 +124,12 @@ export default function RequestBook() {
               onChangeText={(value) => setAuthorName(value)}
             />
           </View>
+
+          <Dropdown
+            value={selectedGrade}
+            onChange={(item: string) => setSelectedGrade(item)}
+            options={courses || []}
+          />
 
           <Input
             style={{ height: 100, color: theme.gray.gray400 }}
@@ -114,7 +166,10 @@ export default function RequestBook() {
         </View>
 
         <View style={styles.buttonsContainer}>
-          <Button onPress={() => {}} variant={ButtonVariants.solid}>
+          <Button
+            onPress={() => onSendRequest()}
+            variant={ButtonVariants.solid}
+          >
             Solicitar libro
           </Button>
         </View>

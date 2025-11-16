@@ -1,6 +1,5 @@
-import { Container, ThemedText } from "@/components/UI";
+import { Accordion, Container, ThemedText } from "@/components/UI";
 import { ScrollView, View } from "react-native";
-import Accordion from "../components/accordion";
 import FaqContent from "./components/faq-content";
 import { FAQS } from "./constants";
 

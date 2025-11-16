@@ -8,6 +8,7 @@ import { View } from "react-native";
 export default function Profile() {
   const { user } = useAuthContext();
   const isTeacher = user?.role === Role.TEACHER;
+
   if (!user) return null;
 
   return (

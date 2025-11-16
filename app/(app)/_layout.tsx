@@ -35,6 +35,14 @@ export default function AppLayout() {
               canGoBack: () => false,
             }}
           />
+
+          <Stack.Screen
+            name="requests"
+            initialParams={{
+              canGoBack: () => true,
+            }}
+          />
+
           <Stack.Screen
             name="book/[id]"
             initialParams={{

@@ -8,13 +8,13 @@ const Dropdown = ({
   onChange,
   options,
 }: {
-  value: string;
+  value: string | string[];
   onChange: (item: string) => void;
   options: Array<{ label: string; value: string }>;
 }) => {
   return (
     <DropdownCore
-      style={[styles.dropdown, { backgroundColor: theme.primary.brand900 }]}
+      style={[styles.dropdown, { backgroundColor: "transparent" }]}
       containerStyle={{
         backgroundColor: theme.primary.brand950,
         borderRadius: 8,
@@ -22,7 +22,6 @@ const Dropdown = ({
         marginTop: 10,
       }}
       selectedTextStyle={{
-        backgroundColor: theme.primary.brand900,
         color: theme.base.white,
         borderRadius: 0,
       }}
@@ -36,6 +35,7 @@ const Dropdown = ({
       itemTextStyle={{
         color: theme.base.white,
       }}
+      placeholderStyle={{ color: theme.gray.gray400 }}
       data={options}
       search
       maxHeight={300}

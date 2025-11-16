@@ -1,8 +1,13 @@
-export * from './button'
-export * from './container'
+export { default as Accordion } from "./accordion";
+export { default as Banner } from "./banner";
+export * from "./blur-view/blur-view.component";
+export * from "./button";
+export * from "./container";
+export { default as Dropdown } from "./dropdown";
 export * from "./illustrations";
-export * from './input'
-export * from './loader'
-export * from './modal'
+export * from "./input";
+export * from "./loader";
+export * from "./modal";
+export * from "./pill";
 export * from "./radio-button";
 export * from "./text";
