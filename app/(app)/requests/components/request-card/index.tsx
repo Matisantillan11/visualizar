@@ -46,7 +46,7 @@ export const RequestCard = ({ request }: { request: BookRequest }) => {
           {request.title}
         </ThemedText>
 
-        <Pill label={formatDate(request.createdAt)} />
+        <Pill label="Pendiente" />
       </View>
       <View>
         <CardDetails label="Autor" value={request.authorName} />

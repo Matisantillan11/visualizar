@@ -4,13 +4,16 @@ import {
   DataSecurityIllustration,
   Dropdown,
   Input,
+  Loader,
   RadioButton,
   ThemedText,
+  Toast,
 } from "@/components/UI";
 import { StyleSheet, View } from "react-native";
 
 import { useAuthContext } from "@/app/(auth)/hooks/useAuthContext";
 import { VerticalLinearGradient } from "@/components/linear-gradient/linear-gradient.component";
+import useToast from "@/components/UI/toast/use-toast";
 import { theme } from "@/constants";
 import { fetcher } from "@/lib/fetcher";
 import { useRouter } from "expo-router";
@@ -22,6 +25,8 @@ export default function RequestBook() {
   const { user } = useAuthContext();
   const router = useRouter();
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const [selectedGrade, setSelectedGrade] = useState<string>("");
   const [courses, setCourses] = useState<
     Array<{ label: string; value: string }>
@@ -31,6 +36,8 @@ export default function RequestBook() {
   const [authorName, setAuthorName] = useState<string>("");
   const [comments, setComments] = useState<string>("");
   const [checked, setChecked] = React.useState("all");
+
+  const { showToast } = useToast();
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -53,23 +60,31 @@ export default function RequestBook() {
 
     fetchCourses();
   }, []);
+
+  const onResetForm = () => {
+    setBookName("");
+    setAuthorName("");
+    setSelectedGrade("");
+    setComments("");
+    setChecked("all");
+  };
+
   const onSendRequest = async () => {
     try {
       if (!user) {
-        throw new Error("User not found");
+        showToast("Usuario no encontrado", "customError");
+        return;
       }
 
       if (!bookName || !authorName) {
-        throw new Error("Book name and author name are required");
+        showToast(
+          "El nombre del libro y el nombre del autor son requeridos",
+          "customError"
+        );
+        return;
       }
 
-      console.log({
-        courseIds: [selectedGrade],
-        title: bookName,
-        authorName,
-        comments,
-        animations: getAnimationsSelected(checked),
-      });
+      setIsLoading(true);
 
       const response = await fetcher<any>({
         url: "/books/request",
@@ -89,10 +104,17 @@ export default function RequestBook() {
       });
 
       if ("id" in response) {
-        router.navigate(`/(app)`);
+        onResetForm();
+        showToast("Libro solicitado correctamente", "customSuccess");
+        setTimeout(() => {
+          router.navigate(`/(app)`);
+        }, 3000);
       }
     } catch (error) {
+      showToast("Error al solicitar el libro", "customError");
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -170,10 +192,11 @@ export default function RequestBook() {
             onPress={() => onSendRequest()}
             variant={ButtonVariants.solid}
           >
-            Solicitar libro
+            {isLoading ? <Loader size="small" /> : "Solicitar libro"}
           </Button>
         </View>
       </ScrollView>
+      <Toast />
     </VerticalLinearGradient>
   );
 }

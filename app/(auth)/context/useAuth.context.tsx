@@ -1,8 +1,16 @@
+import useToast from "@/components/UI/toast/use-toast";
 import { useStorage } from "@/hooks";
-import { fetcher } from '@/lib/fetcher';
-import { useRouter } from 'expo-router';
-import { createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState } from 'react';
-import { AuthResponse, AuthSession, AuthUser } from '../interfaces';
+import { fetcher } from "@/lib/fetcher";
+import { useRouter } from "expo-router";
+import {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
+import { AuthResponse, AuthSession, AuthUser } from "../interfaces";
 
 type AuthStateContextProps = {
   userEmailAttempt: string | undefined;
@@ -25,7 +33,9 @@ type AuthStateContextProps = {
   session: AuthSession | undefined;
 };
 
-export const AuthStateContext = createContext<AuthStateContextProps | undefined>(undefined);
+export const AuthStateContext = createContext<
+  AuthStateContextProps | undefined
+>(undefined);
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
@@ -35,36 +45,41 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isValidatingCode, setIsValidatingCode] = useState<boolean>(false);
   const [wasCodeResent, setWasCodeResent] = useState<boolean>(false);
-  const [userEmailAttempt, setUserEmailAttempt] = useState<string | undefined>(undefined);
-  const [userCodeAttempt, setUserCodeAttempt] = useState<string | undefined>(undefined);
+  const [userEmailAttempt, setUserEmailAttempt] = useState<string | undefined>(
+    undefined
+  );
+  const [userCodeAttempt, setUserCodeAttempt] = useState<string | undefined>(
+    undefined
+  );
 
+  const { showToast } = useToast();
   const { storeItem, getItem, removeItem } = useStorage();
 
   const disableOnboardingPage = async () => {
-    await storeItem({ pairs: [{ key: 'onboarding', value: true }] });
+    await storeItem({ pairs: [{ key: "onboarding", value: true }] });
   };
 
   const saveSession = async (session: AuthSession) => {
-    await storeItem({ pairs: [{ key: 'session', value: session }] });
+    await storeItem({ pairs: [{ key: "session", value: session }] });
   };
 
   const getSession = async () => {
-    const session = await getItem('session');
+    const session = await getItem("session");
     return session;
   };
 
   const getUser = async () => {
-    const user = await getItem('user');
+    const user = await getItem("user");
     return user;
   };
 
   const saveUser = async (user: AuthUser) => {
-    await storeItem({ pairs: [{ key: 'user', value: user }] });
+    await storeItem({ pairs: [{ key: "user", value: user }] });
   };
 
   const removeSession = async () => {
-    await removeItem('session');
-    await removeItem('user');
+    await removeItem("session");
+    await removeItem("user");
   };
 
   const onSendEmailCode = async (isResending: boolean) => {
@@ -90,7 +105,10 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       if (isResending) setWasCodeResent(false);
       console.error("Error sending OTP:", error);
-      throw new Error("Failed to send OTP code. Please try again.");
+      showToast(
+        "Error al enviar el código OTP. Por favor, intenta nuevamente.",
+        "customError"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -100,15 +118,15 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     setIsValidatingCode(true);
     try {
       const response = await fetcher<AuthResponse>({
-        url: '/auth/verify-otp',
+        url: "/auth/verify-otp",
         init: {
-          method: 'POST',
+          method: "POST",
           body: JSON.stringify({
             email: userEmailAttempt,
             token: userCodeAttempt,
           }),
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         },
         withAuthentication: false, // No auth needed for verification
@@ -119,7 +137,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
           id: response.user.id,
           teacherId: response.user.teacherId,
           studentId: response.user.studentId,
-          name: response.user.name ?? '',
+          name: response.user.name ?? "",
           role: response.user.role,
           email: response.user.email,
         };
@@ -136,25 +154,28 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
           await saveUser(authUser);
           setUser(authUser);
           setSession(authSession);
-          setUserCodeAttempt('');
-          setUserEmailAttempt('');
-          router.navigate('/(app)');
+          setUserCodeAttempt("");
+          setUserEmailAttempt("");
+          router.navigate("/(app)");
         }
       }
     } catch (error) {
-      console.error('Error validating code:', error);
-      throw new Error('Failed to validate code. Please try again.');
+      console.error("Error validating code:", error);
+      showToast(
+        "Error al validar el código. Por favor, intenta nuevamente.",
+        "customError"
+      );
     } finally {
       setIsValidatingCode(false);
     }
   };
 
   const handleSignOut = async () => {
-    console.log('click');
+    console.log("click");
     await removeSession();
     setSession(undefined);
     setUser(undefined);
-    router.push('/(auth)');
+    router.push("/(auth)");
   };
 
   const getUserData = () => {
@@ -174,10 +195,10 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         } else {
           setSession(undefined);
           setUser(undefined);
-          router.push('/(auth)');
+          router.push("/(auth)");
         }
       } catch (error) {
-        console.error('Error getting session and user:', error);
+        console.error("Error getting session and user:", error);
       } finally {
         setIsLoading(false);
       }
@@ -202,7 +223,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         getUserData,
         user,
         session,
-      }}>
+      }}
+    >
       {children}
     </AuthStateContext.Provider>
   );

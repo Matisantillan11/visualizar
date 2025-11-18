@@ -11,3 +11,4 @@ export * from "./modal";
 export * from "./pill";
 export * from "./radio-button";
 export * from "./text";
+export * from "./toast";

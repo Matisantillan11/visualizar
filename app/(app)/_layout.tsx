@@ -1,5 +1,6 @@
 import { AppNavbar } from "@/components/navbar/app-navbar.component";
 import Menu from '@/components/navbar/menu/menu.component';
+import { Toast } from "@/components/UI";
 import { Stack } from "expo-router";
 import { useCallback, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -74,6 +75,7 @@ export default function AppLayout() {
 
         <Menu isVisible={isVisible} onClose={onClose} />
       </ModelPreloadProvider>
+      <Toast />
     </GestureHandlerRootView>
   );
 }
