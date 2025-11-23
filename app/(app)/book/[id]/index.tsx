@@ -14,6 +14,7 @@ import { Renderer, THREE } from "expo-three";
 import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Platform,
   ScrollView,
   useWindowDimensions,
   View,
@@ -24,12 +25,16 @@ import { parseAnimations } from "./utils";
 
 export default function BookDetail() {
   const { id } = useLocalSearchParams();
+
   const router = useRouter();
   const requestRef = useRef<number>(0);
+
   const { setBookId, setModelUrls } = useModelPreload();
 
   const [book, setBook] = useState<Book | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const isIos = Platform.OS === "ios";
   const bookUrl = `/books/${id}`;
 
   useEffect(() => {
@@ -52,7 +57,7 @@ export default function BookDetail() {
     fetchBook();
   }, [id]);
 
-  const { height, width } = useWindowDimensions();
+  const { height } = useWindowDimensions();
 
   const onContextCreate = async (gl: ExpoWebGLRenderingContext) => {
     const { drawingBufferWidth: width, drawingBufferHeight: height } = gl;
@@ -94,8 +99,6 @@ export default function BookDetail() {
     animate();
   };
 
-  const [isVisible, setIsVisible] = useState<boolean>(false);
-
   return (
     <VerticalLinearGradient>
       <View style={{ flex: 1 }}>
@@ -106,11 +109,14 @@ export default function BookDetail() {
             {!book?.is3dEnabled ? <Banner /> : null}
             <View
               style={{
+                width: "100%",
                 alignItems: "center",
                 marginVertical: 35,
               }}
             >
-              <ThemedText>{book?.name}</ThemedText>
+              <ThemedText style={{ fontSize: isIos ? 24 : 20 }}>
+                {book?.name}
+              </ThemedText>
               <ThemedText
                 variant={ThemedTextVariants.default}
                 style={{ fontSize: 16 }}
@@ -126,6 +132,7 @@ export default function BookDetail() {
               top={75}
               left={-25}
             />
+
             <GLView
               style={{
                 height: height * 0.65,

@@ -14,6 +14,13 @@ interface BookRequestCourse {
   course: Course;
 }
 
+export enum BookRequestStatus {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  DENIED = "DENIED",
+  PUBLISHED = "PUBLISHED",
+}
+
 export interface BookRequest {
   id: string;
   createdAt: string;
@@ -25,4 +32,5 @@ export interface BookRequest {
   animations: string[];
   user: User;
   bookRequestCourse: BookRequestCourse[];
+  status: BookRequestStatus;
 }

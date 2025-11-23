@@ -9,7 +9,7 @@ import {
   ThemedText,
   Toast,
 } from "@/components/UI";
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 
 import { useAuthContext } from "@/app/(auth)/hooks/useAuthContext";
 import { VerticalLinearGradient } from "@/components/linear-gradient/linear-gradient.component";
@@ -36,6 +36,8 @@ export default function RequestBook() {
   const [authorName, setAuthorName] = useState<string>("");
   const [comments, setComments] = useState<string>("");
   const [checked, setChecked] = React.useState("all");
+
+  const isIos = Platform.OS === "ios";
 
   const { showToast } = useToast();
 
@@ -125,7 +127,7 @@ export default function RequestBook() {
           <DataSecurityIllustration />
         </View>
 
-        <ThemedText style={styles.title}>
+        <ThemedText style={[styles.title, { fontSize: isIos ? 24 : 20 }]}>
           Solicitar alta de nuevo libro
         </ThemedText>
         <View style={styles.inputContainer}>

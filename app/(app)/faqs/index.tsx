@@ -6,19 +6,19 @@ import { FAQS } from "./constants";
 export default function Faqs() {
   return (
     <Container gradient withNavbar>
-      <ScrollView>
-        <View
-          style={{
-            width: "100%",
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: -40,
-            marginBottom: 30,
-          }}
-        >
-          <ThemedText>Preguntas Frecuentes</ThemedText>
-        </View>
+      <View
+        style={{
+          width: "100%",
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: -40,
+          marginBottom: 30,
+        }}
+      >
+        <ThemedText>Preguntas Frecuentes</ThemedText>
+      </View>
 
+      <ScrollView style={{ marginBottom: 30 }}>
         {FAQS.map((faq, index) => (
           <Accordion
             title={faq.title}

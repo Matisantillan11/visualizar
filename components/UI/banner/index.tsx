@@ -2,9 +2,12 @@ import { ThemedText, ThemedTextVariants } from "@/components/UI";
 import { theme } from "@/constants";
 import Feather from "@expo/vector-icons/Feather";
 import * as React from "react";
+import { Platform } from "react-native";
 import { Banner as BannerCore } from "react-native-paper";
 
 const Banner = () => {
+  const isIos = Platform.OS === "ios";
+
   return (
     <BannerCore
       visible={true}
@@ -15,7 +18,7 @@ const Banner = () => {
         borderWidth: 2,
         padding: 0,
         marginHorizontal: 32,
-        marginTop: 16,
+        marginTop: isIos ? 16 : 0,
         shadowColor: theme.warning.warning600,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
@@ -34,7 +37,7 @@ const Banner = () => {
     >
       <ThemedText
         variant={ThemedTextVariants.default}
-        style={{ color: theme.warning.warning500, fontSize: 16 }}
+        style={{ color: theme.warning.warning500, fontSize: isIos ? 16 : 14 }}
       >
         Este libro no contiene animaciones por el momento
       </ThemedText>
