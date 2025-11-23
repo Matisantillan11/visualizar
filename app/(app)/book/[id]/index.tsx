@@ -1,6 +1,5 @@
 import { VerticalLinearGradient } from "@/components/linear-gradient/linear-gradient.component";
 import {
-  Banner,
   BlurView,
   Button,
   ThemedText,
@@ -106,7 +105,6 @@ export default function BookDetail() {
           <ActivityIndicator color="white" />
         ) : (
           <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-            {!book?.is3dEnabled ? <Banner /> : null}
             <View
               style={{
                 width: "100%",
@@ -149,22 +147,21 @@ export default function BookDetail() {
             >
               {book?.description?.slice(0, 300)}...
             </ThemedText>
-            {book?.is3dEnabled && (
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  padding: 32,
-                }}
+
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                padding: 32,
+              }}
+            >
+              <Button
+                style={{ width: "100%" }}
+                onPress={() => router.push(`/book/${id}/animate`)}
               >
-                <Button
-                  style={{ width: "100%" }}
-                  onPress={() => router.push(`/book/${id}/animate`)}
-                >
-                  Ver animaciones
-                </Button>
-              </View>
-            )}
+                Ver animaciones
+              </Button>
+            </View>
           </ScrollView>
         )}
       </View>
