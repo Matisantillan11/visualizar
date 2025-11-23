@@ -7,7 +7,7 @@ import {
 import { theme } from "@/constants";
 import { fetcher } from "@/lib/fetcher";
 import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Platform, ScrollView, StyleSheet, View } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 import { useAuthContext } from "../(auth)/hooks/useAuthContext";
 import { Role } from "../(auth)/interfaces";
@@ -32,6 +32,8 @@ export default function app() {
   const isHorizontal = bookAligment === BooksAligment.horizontal;
   const isTeacher = user?.role === Role.TEACHER;
   const booksUrl = `/books`;
+
+  const isIos = Platform.OS === "ios";
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -89,7 +91,7 @@ export default function app() {
     <Container gradient withNavbar>
       <View
         style={{
-          marginTop: -32,
+          marginTop: isIos ? -32 : 0,
           marginBottom: 21,
           flexDirection: "row",
           alignItems: "center",
@@ -125,15 +127,17 @@ export default function app() {
           </View>
         )}
       </View>
+
       <ScrollView
         contentContainerStyle={{ paddingVertical: 16 }}
         showsVerticalScrollIndicator={false}
       >
         <View
           style={{
-            flexDirection,
+            flexDirection: "row",
             flexWrap: "wrap",
             gap: books?.length ? 28 : 0,
+            paddingBottom: isIos ? 32 : 128,
           }}
         >
           {isLoading || isLoadingCourses ? (

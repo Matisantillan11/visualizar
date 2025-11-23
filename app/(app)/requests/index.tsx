@@ -3,7 +3,7 @@ import { theme } from "@/constants";
 import { fetcher } from "@/lib/fetcher";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Platform, StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { AddButton } from "./components/add-button";
 import { RequestCard } from "./components/request-card";
@@ -14,6 +14,8 @@ export default function Requests() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const router = useRouter();
+
+  const isIos = Platform.OS === "ios";
 
   useEffect(() => {
     try {
@@ -40,11 +42,13 @@ export default function Requests() {
     router.navigate("/book/request-book");
   };
 
+  console.log({ requests });
+
   return (
     <Container gradient withNavbar>
       <View
         style={{
-          marginTop: -32,
+          marginTop: isIos ? -32 : 0,
           marginBottom: 21,
           flexDirection: "row",
           alignItems: "center",
@@ -62,7 +66,7 @@ export default function Requests() {
         <ActivityIndicator color="white" size="large" />
       ) : (
         <ScrollView
-          contentContainerStyle={{ gap: 16, paddingBottom: 16 }}
+          contentContainerStyle={{ gap: 16, paddingBottom: isIos ? 64 : 128 }}
           showsVerticalScrollIndicator={false}
         >
           {requests?.length

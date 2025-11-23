@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput, View } from "react-native";
+import { Platform, StyleSheet, TextInput, View } from "react-native";
 
 import { theme } from "@/constants";
 import { FC } from "react";
@@ -6,6 +6,7 @@ import { InputProps } from "./interfaces";
 
 export const Input: FC<InputProps> = (props) => {
   const { rightIcon, leftIcon, styles: customStyles, ...restProps } = props;
+  const isIos = Platform.OS === "ios";
 
   return (
     <View
@@ -13,6 +14,7 @@ export const Input: FC<InputProps> = (props) => {
         styles.wrapper,
         customStyles?.wrapper,
         {
+          paddingVertical: isIos ? 16 : 4,
           backgroundColor: props.disabled ? theme.gray.gray350 : "transparent",
         },
       ]}
@@ -39,7 +41,6 @@ const styles = StyleSheet.create({
     borderColor: theme.gray.gray350,
     borderRadius: 8,
     paddingHorizontal: 8,
-    paddingVertical: 16,
   },
   input: {
     flex: 1,
