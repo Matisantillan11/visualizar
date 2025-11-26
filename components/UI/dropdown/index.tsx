@@ -41,8 +41,8 @@ const Dropdown = ({
       maxHeight={300}
       labelField="label"
       valueField="value"
-      placeholder="Select item"
-      searchPlaceholder="Search..."
+      placeholder="Seleccionar"
+      searchPlaceholder="Buscar..."
       value={value}
       onChange={(item) => {
         onChange(item.value);
