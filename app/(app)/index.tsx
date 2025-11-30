@@ -5,71 +5,45 @@ import {
   ThemedTextVariants,
 } from "@/components/UI";
 import { theme } from "@/constants";
-import { fetcher } from "@/lib/fetcher";
+import { useBooksByCourseId } from "@/lib/react-query/books";
 import { useCoursesByTeacherId } from "@/lib/react-query/courses";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Platform, ScrollView, StyleSheet, View } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 import { useAuthContext } from "../(auth)/hooks/useAuthContext";
 import { Role } from "../(auth)/interfaces";
-import { Book } from "./book/types/book";
 import CardAligmentButton from "./components/card-aligment-button/card-aligment-button.component";
 import Card from "./components/card/card.component";
 import { EmptyState } from "./components/empty-state";
 import useBooksAligment, { BooksAligment } from "./hooks/use-books-aligment";
 
 export default function app() {
-  const { bookAligment, flexDirection, setDirection } = useBooksAligment();
-  const { user } = useAuthContext();
-
-  const [books, setBook] = useState<Array<Book> | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedGrade, setSelectedGrade] = useState("all");
+  const { bookAligment, setDirection } = useBooksAligment();
+  const { user } = useAuthContext();
 
   const isHorizontal = bookAligment === BooksAligment.horizontal;
   const isTeacher = user?.role === Role.TEACHER;
-  const booksUrl = `/books`;
-
   const isIos = Platform.OS === "ios";
 
   const { data: coursesData, isLoading: isLoadingCourses } =
     useCoursesByTeacherId(user?.teacherId, isTeacher);
 
-  const courses = useMemo(
-    () =>
-      coursesData?.map((course) => ({
-        label: course.name,
-        value: course.id,
-      })),
-    [coursesData]
+  const { data: books, isLoading: isLoadingBooks } = useBooksByCourseId(
+    selectedGrade,
+    !isLoadingCourses && isTeacher
   );
 
-  useEffect(() => {
-    const fetchBooks = async () => {
-      setIsLoading(true);
-      if (isLoadingCourses) return;
-
-      try {
-        const isAllGradesSelected = selectedGrade === "all";
-        const finalBookUrl = isAllGradesSelected
-          ? booksUrl
-          : `${booksUrl}/course/${selectedGrade}`;
-        const bookResponse = await fetcher<Book[]>({
-          url: finalBookUrl,
-        });
-
-        if (bookResponse) {
-          setBook(bookResponse);
-        }
-      } catch (error) {
-        console.log({ error });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchBooks();
-  }, [isLoadingCourses, selectedGrade]);
+  const courses = useMemo(
+    () => [
+      { label: "Todos", value: "all" },
+      ...(coursesData?.map((course) => ({
+        label: course.name,
+        value: course.id,
+      })) || []),
+    ],
+    [coursesData]
+  );
 
   return (
     <Container gradient withNavbar>
@@ -124,7 +98,7 @@ export default function app() {
             paddingBottom: isIos ? 32 : 128,
           }}
         >
-          {isLoading || isLoadingCourses ? (
+          {isLoadingBooks || isLoadingCourses ? (
             <View
               style={{
                 flex: 1,

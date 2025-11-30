@@ -2,8 +2,8 @@ import { getReverseAnimationsSelected } from "@/app/(app)/book/request-book/help
 import { ThemedText, ThemedTextVariants } from "@/components/UI";
 import Pill from "@/components/UI/pill";
 import { theme } from "@/constants";
+import { BookRequest } from "@/lib/react-query/books";
 import { View } from "react-native";
-import { BookRequest } from "../../types";
 import { CardDetails } from "./card-details";
 
 export const RequestCard = ({ request }: { request: BookRequest }) => {
@@ -43,24 +43,24 @@ export const RequestCard = ({ request }: { request: BookRequest }) => {
             fontSize: 16,
           }}
         >
-          {request.title}
+          {request?.title}
         </ThemedText>
 
-        <Pill label={request.status} />
+        <Pill label={request?.status} />
       </View>
       <View>
-        <CardDetails label="Autor" value={request.authorName} />
+        <CardDetails label="Autor" value={request?.authorName} />
 
-        <CardDetails label="Comentarios" value={request.comments} />
+        <CardDetails label="Comentarios" value={request?.comments} />
 
         <CardDetails
           label="Animaciones"
-          value={getReverseAnimationsSelected(request.animations)}
+          value={getReverseAnimationsSelected(request?.animations)}
         />
 
         <CardDetails
           label="Fecha de solicitud"
-          value={formatDate(request.createdAt)}
+          value={formatDate(request?.createdAt)}
         />
       </View>
     </View>

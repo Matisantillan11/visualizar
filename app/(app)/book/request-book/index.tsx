@@ -15,7 +15,7 @@ import { useAuthContext } from "@/app/(auth)/hooks/useAuthContext";
 import { VerticalLinearGradient } from "@/components/linear-gradient/linear-gradient.component";
 import useToast from "@/components/UI/toast/use-toast";
 import { theme } from "@/constants";
-import { fetcher } from "@/lib/fetcher";
+import { useCreateBookRequest } from "@/lib/react-query/books";
 import { useCoursesByTeacherId } from "@/lib/react-query/courses";
 import { usePreventRemove } from "@react-navigation/native";
 import { useRouter } from "expo-router";
@@ -27,8 +27,7 @@ import CancelRequestModal from "./modals/cancel-request";
 export default function RequestBook() {
   const { user } = useAuthContext();
   const router = useRouter();
-
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { showToast } = useToast();
 
   const [selectedGrade, setSelectedGrade] = useState<string>("");
 
@@ -40,7 +39,6 @@ export default function RequestBook() {
 
   const isIos = Platform.OS === "ios";
 
-  const { showToast } = useToast();
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   usePreventRemove(hasUnsavedChanges, () => {
@@ -59,6 +57,22 @@ export default function RequestBook() {
     [coursesData]
   );
 
+  const { mutate: createBookRequest, isPending: isCreatingBookRequest } =
+    useCreateBookRequest({
+      onSuccess: () => {
+        onResetForm();
+        setHasUnsavedChanges(false);
+        showToast("Libro solicitado correctamente", "customSuccess");
+        setTimeout(() => {
+          router.navigate(`/(app)`);
+        }, 3000);
+      },
+      onError: (error) => {
+        showToast("Error al solicitar el libro", "customError");
+        console.error(error);
+      },
+    });
+
   const onResetForm = () => {
     setBookName("");
     setAuthorName("");
@@ -67,54 +81,27 @@ export default function RequestBook() {
     setChecked("all");
   };
 
-  const onSendRequest = async () => {
-    try {
-      if (!user) {
-        showToast("Usuario no encontrado", "customError");
-        return;
-      }
-
-      if (!bookName || !authorName) {
-        showToast(
-          "El nombre del libro y el nombre del autor son requeridos",
-          "customError"
-        );
-        return;
-      }
-
-      setIsLoading(true);
-
-      const response = await fetcher<any>({
-        url: "/books/request",
-        init: {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            courseIds: [selectedGrade],
-            title: bookName,
-            authorName,
-            comments,
-            animations: getAnimationsSelected(checked),
-          }),
-        },
-      });
-
-      if ("id" in response) {
-        onResetForm();
-        setHasUnsavedChanges(false);
-        showToast("Libro solicitado correctamente", "customSuccess");
-        setTimeout(() => {
-          router.navigate(`/(app)`);
-        }, 3000);
-      }
-    } catch (error) {
-      showToast("Error al solicitar el libro", "customError");
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+  const onSendRequest = () => {
+    if (!user) {
+      showToast("Usuario no encontrado", "customError");
+      return;
     }
+
+    if (!bookName || !authorName) {
+      showToast(
+        "El nombre del libro y el nombre del autor son requeridos",
+        "customError"
+      );
+      return;
+    }
+
+    createBookRequest({
+      courseIds: [selectedGrade],
+      title: bookName,
+      authorName,
+      comments,
+      animations: getAnimationsSelected(checked),
+    });
   };
 
   const onClose = () => {
@@ -237,9 +224,13 @@ export default function RequestBook() {
             onPress={() => onSendRequest()}
             variant={ButtonVariants.solid}
             style={{ flex: 1 }}
-            disabled={isLoading || isLoadingCourses}
+            disabled={isCreatingBookRequest || isLoadingCourses}
           >
-            {isLoading ? <Loader size="small" /> : "Solicitar libro"}
+            {isCreatingBookRequest ? (
+              <Loader size="small" />
+            ) : (
+              "Solicitar libro"
+            )}
           </Button>
 
           <Button
@@ -247,7 +238,7 @@ export default function RequestBook() {
             variant={ButtonVariants.outlined}
             style={{ borderColor: theme.error.error500, flex: 1 }}
             labelStyle={{ color: theme.error.error500 }}
-            disabled={isLoading || isLoadingCourses}
+            disabled={isCreatingBookRequest || isLoadingCourses}
           >
             Cancelar
           </Button>

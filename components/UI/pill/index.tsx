@@ -1,5 +1,5 @@
-import { BookRequestStatus } from "@/app/(app)/requests/types";
 import { theme } from "@/constants";
+import { BookRequestStatus } from "@/lib/react-query/books";
 import { View } from "react-native";
 import { ThemedText, ThemedTextVariants } from "../text";
 
@@ -16,7 +16,6 @@ export default function Pill({ label }: { label: string }) {
         return theme.primary.brand900;
     }
   };
-
 
   const getPillLabel = (label: string) => {
     switch (label) {
