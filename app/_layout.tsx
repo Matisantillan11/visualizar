@@ -6,6 +6,7 @@ import * as SplashScreen from "expo-splash-screen";
 
 import { Loader, Toast } from "@/components/UI";
 import { theme } from "@/constants";
+import { QueryProvider } from "@/lib/react-query";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -51,11 +52,13 @@ export default function RootLayout() {
         },
       }}
     >
-      <AuthContextProvider>
-        <RouterRedirector />
-        <StatusBar style="light" />
-        <Toast />
-      </AuthContextProvider>
+      <QueryProvider>
+        <AuthContextProvider>
+          <RouterRedirector />
+          <StatusBar style="light" />
+          <Toast />
+        </AuthContextProvider>
+      </QueryProvider>
     </ThemeProvider>
   );
 }

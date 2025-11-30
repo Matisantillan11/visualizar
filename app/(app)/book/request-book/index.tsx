@@ -16,9 +16,10 @@ import { VerticalLinearGradient } from "@/components/linear-gradient/linear-grad
 import useToast from "@/components/UI/toast/use-toast";
 import { theme } from "@/constants";
 import { fetcher } from "@/lib/fetcher";
+import { useCoursesByTeacherId } from "@/lib/react-query/courses";
 import { usePreventRemove } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { getAnimationsSelected } from "./helpers";
 import CancelRequestModal from "./modals/cancel-request";
@@ -30,51 +31,33 @@ export default function RequestBook() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [selectedGrade, setSelectedGrade] = useState<string>("");
-  const [courses, setCourses] = useState<
-    Array<{ label: string; value: string }>
-  >([]);
 
   const [bookName, setBookName] = useState<string>("");
   const [authorName, setAuthorName] = useState<string>("");
   const [comments, setComments] = useState<string>("");
   const [isVisible, setIsVisible] = useState(false);
   const [checked, setChecked] = React.useState("all");
-  const [navigationEvent, setNavigationEvent] = useState<any>(null);
 
   const isIos = Platform.OS === "ios";
 
   const { showToast } = useToast();
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  usePreventRemove(hasUnsavedChanges, ({ data }) => {
-    // Store the navigation event to use later
-    console.log(data);
-    console.log("prevent remove");
-    // Show a confirmation dialog
+  usePreventRemove(hasUnsavedChanges, () => {
     setIsVisible(true);
   });
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const courseResponse = await fetcher<any[]>({
-          url: `/courses/teacher/${user?.teacherId}`,
-        });
+  const { data: coursesData, isLoading: isLoadingCourses } =
+    useCoursesByTeacherId(user?.teacherId);
 
-        if (courseResponse) {
-          const courses = courseResponse.map((course) => ({
-            label: course.name,
-            value: course.id,
-          }));
-          setCourses((prevCourses) => [...prevCourses, ...courses]);
-        }
-      } catch (error) {
-        console.log({ error });
-      }
-    };
-
-    fetchCourses();
-  }, []);
+  const courses = useMemo(
+    () =>
+      coursesData?.map((course) => ({
+        label: course.name,
+        value: course.id,
+      })),
+    [coursesData]
+  );
 
   const onResetForm = () => {
     setBookName("");
@@ -254,6 +237,7 @@ export default function RequestBook() {
             onPress={() => onSendRequest()}
             variant={ButtonVariants.solid}
             style={{ flex: 1 }}
+            disabled={isLoading || isLoadingCourses}
           >
             {isLoading ? <Loader size="small" /> : "Solicitar libro"}
           </Button>
@@ -263,6 +247,7 @@ export default function RequestBook() {
             variant={ButtonVariants.outlined}
             style={{ borderColor: theme.error.error500, flex: 1 }}
             labelStyle={{ color: theme.error.error500 }}
+            disabled={isLoading || isLoadingCourses}
           >
             Cancelar
           </Button>

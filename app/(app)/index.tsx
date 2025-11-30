@@ -6,7 +6,8 @@ import {
 } from "@/components/UI";
 import { theme } from "@/constants";
 import { fetcher } from "@/lib/fetcher";
-import { useEffect, useState } from "react";
+import { useCoursesByTeacherId } from "@/lib/react-query/courses";
+import { useEffect, useMemo, useState } from "react";
 import { Platform, ScrollView, StyleSheet, View } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 import { useAuthContext } from "../(auth)/hooks/useAuthContext";
@@ -21,13 +22,9 @@ export default function app() {
   const { bookAligment, flexDirection, setDirection } = useBooksAligment();
   const { user } = useAuthContext();
 
-  const [isLoadingCourses, setIsLoadingCourses] = useState<boolean>(true);
   const [books, setBook] = useState<Array<Book> | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedGrade, setSelectedGrade] = useState("all");
-  const [courses, setCourses] = useState<
-    Array<{ label: string; value: string }>
-  >([{ label: "Todos", value: "all" }]);
 
   const isHorizontal = bookAligment === BooksAligment.horizontal;
   const isTeacher = user?.role === Role.TEACHER;
@@ -35,30 +32,17 @@ export default function app() {
 
   const isIos = Platform.OS === "ios";
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        setIsLoadingCourses(true);
-        const courseResponse = await fetcher<any[]>({
-          url: `/courses/teacher/${user?.teacherId}`,
-        });
+  const { data: coursesData, isLoading: isLoadingCourses } =
+    useCoursesByTeacherId(user?.teacherId, isTeacher);
 
-        if (courseResponse) {
-          const courses = courseResponse.map((course) => ({
-            label: course.name,
-            value: course.id,
-          }));
-          setCourses((prevCourses) => [...prevCourses, ...courses]);
-        }
-      } catch (error) {
-        console.log({ error });
-      } finally {
-        setIsLoadingCourses(false);
-      }
-    };
-
-    fetchCourses();
-  }, []);
+  const courses = useMemo(
+    () =>
+      coursesData?.map((course) => ({
+        label: course.name,
+        value: course.id,
+      })),
+    [coursesData]
+  );
 
   useEffect(() => {
     const fetchBooks = async () => {
