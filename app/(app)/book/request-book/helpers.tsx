@@ -1,13 +1,15 @@
-export const getAnimationsSelected = (value: string) => {
-  if (value === "all") {
+import { createBookRequestFormKeys } from "@/lib/react-query/books";
+
+export const getAnimationsSelected = (value: string[]) => {
+  if (value.includes("all")) {
     return ["ALL"];
   }
 
-  if (value === "main-characters") {
+  if (value.includes("main-characters")) {
     return ["MAIN"];
   }
 
-  if (value === "curious-data") {
+  if (value.includes("curious-data")) {
     return ["EXTRA"];
   }
 
@@ -28,4 +30,22 @@ export const getReverseAnimationsSelected = (value: string[]) => {
   }
 
   return "No hay animaciones seleccionadas";
+};
+
+export const bookRequestFormKeys = createBookRequestFormKeys({
+  bookName: "bookName",
+  authorName: "authorName",
+  courseIds: "courseIds",
+  comments: "comments",
+  animations: "animations",
+});
+
+export const getFormValues = () => {
+  return {
+    bookName: "",
+    authorName: "",
+    courseIds: [],
+    comments: "",
+    animations: ["all"],
+  };
 };

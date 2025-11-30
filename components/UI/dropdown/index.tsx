@@ -1,20 +1,27 @@
 import { theme } from '@/constants';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { Dropdown as DropdownCore } from 'react-native-element-dropdown';
+import {
+  Dropdown as DropdownCore,
+  MultiSelect,
+} from "react-native-element-dropdown";
 
 const Dropdown = ({
   value,
   onChange,
   options,
+  style,
+  multiple = false,
 }: {
   value: string | string[];
-  onChange: (item: string) => void;
+  onChange: (item: string | string[]) => void;
   options: Array<{ label: string; value: string }>;
+  style?: any;
+  multiple?: boolean;
 }) => {
-  return (
-    <DropdownCore
-      style={[styles.dropdown, { backgroundColor: "transparent" }]}
+  return multiple ? (
+    <MultiSelect
+      style={[styles.dropdown, { backgroundColor: "transparent" }, style]}
       containerStyle={{
         backgroundColor: theme.primary.brand950,
         borderRadius: 8,
@@ -43,7 +50,43 @@ const Dropdown = ({
       valueField="value"
       placeholder="Seleccionar"
       searchPlaceholder="Buscar..."
-      value={value}
+      value={value as string[]}
+      onChange={(newValue: string[]) => {
+        onChange(newValue);
+      }}
+    />
+  ) : (
+    <DropdownCore
+      style={[styles.dropdown, { backgroundColor: "transparent" }, style]}
+      containerStyle={{
+        backgroundColor: theme.primary.brand950,
+        borderRadius: 8,
+        borderWidth: 1,
+        marginTop: 10,
+      }}
+      selectedTextStyle={{
+        color: theme.base.white,
+        borderRadius: 0,
+      }}
+      activeColor={theme.primary.brand900}
+      inputSearchStyle={[styles.inputSearchStyle, { color: theme.base.white }]}
+      iconStyle={styles.iconStyle}
+      itemContainerStyle={{
+        backgroundColor: theme.primary.brand950,
+        borderRadius: 8,
+      }}
+      itemTextStyle={{
+        color: theme.base.white,
+      }}
+      placeholderStyle={{ color: theme.gray.gray400 }}
+      data={options}
+      search
+      maxHeight={300}
+      labelField="label"
+      valueField="value"
+      placeholder="Seleccionar"
+      searchPlaceholder="Buscar..."
+      value={value as string}
       onChange={(item) => {
         onChange(item.value);
       }}

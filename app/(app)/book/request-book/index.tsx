@@ -2,10 +2,7 @@ import {
   Button,
   ButtonVariants,
   DataSecurityIllustration,
-  Dropdown,
-  Input,
   Loader,
-  RadioButton,
   ThemedText,
   Toast,
 } from "@/components/UI";
@@ -13,29 +10,45 @@ import { Platform, StyleSheet, View } from "react-native";
 
 import { useAuthContext } from "@/app/(auth)/hooks/useAuthContext";
 import { VerticalLinearGradient } from "@/components/linear-gradient/linear-gradient.component";
+import {
+  Form,
+  FormInput,
+  FormRadioButton,
+  FormSelector,
+} from "@/components/UI/form";
 import useToast from "@/components/UI/toast/use-toast";
 import { theme } from "@/constants";
-import { useCreateBookRequest } from "@/lib/react-query/books";
+import {
+  formSchema,
+  FormValues,
+  useCreateBookRequest,
+} from "@/lib/react-query/books";
 import { useCoursesByTeacherId } from "@/lib/react-query/courses";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { usePreventRemove } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 import { ScrollView } from "react-native-gesture-handler";
-import { getAnimationsSelected } from "./helpers";
+import {
+  bookRequestFormKeys,
+  getAnimationsSelected,
+  getFormValues,
+} from "./helpers";
 import CancelRequestModal from "./modals/cancel-request";
 
 export default function RequestBook() {
-  const { user } = useAuthContext();
   const router = useRouter();
+
+  const { user } = useAuthContext();
   const { showToast } = useToast();
 
-  const [selectedGrade, setSelectedGrade] = useState<string>("");
+  const formMethods = useForm({
+    defaultValues: getFormValues(),
+    resolver: zodResolver(formSchema),
+  });
 
-  const [bookName, setBookName] = useState<string>("");
-  const [authorName, setAuthorName] = useState<string>("");
-  const [comments, setComments] = useState<string>("");
   const [isVisible, setIsVisible] = useState(false);
-  const [checked, setChecked] = React.useState("all");
 
   const isIos = Platform.OS === "ios";
 
@@ -74,20 +87,25 @@ export default function RequestBook() {
     });
 
   const onResetForm = () => {
-    setBookName("");
-    setAuthorName("");
-    setSelectedGrade("");
-    setComments("");
-    setChecked("all");
+    formMethods.reset({
+      bookName: "",
+      authorName: "",
+      courseIds: [],
+      comments: "",
+      animations: ["all"],
+    });
   };
 
-  const onSendRequest = () => {
+  const onSendRequest = (data: FormValues) => {
     if (!user) {
       showToast("Usuario no encontrado", "customError");
       return;
     }
 
-    if (!bookName || !authorName) {
+    if (
+      !formMethods.getValues("bookName") ||
+      !formMethods.getValues("authorName")
+    ) {
       showToast(
         "El nombre del libro y el nombre del autor son requeridos",
         "customError"
@@ -96,11 +114,11 @@ export default function RequestBook() {
     }
 
     createBookRequest({
-      courseIds: [selectedGrade],
-      title: bookName,
-      authorName,
-      comments,
-      animations: getAnimationsSelected(checked),
+      courseIds: data.courseIds,
+      title: data.bookName,
+      authorName: data.authorName,
+      comments: data.comments,
+      animations: getAnimationsSelected(data.animations),
     });
   };
 
@@ -139,110 +157,85 @@ export default function RequestBook() {
         <ThemedText style={[styles.title, { fontSize: isIos ? 24 : 20 }]}>
           Solicitar alta de nuevo libro
         </ThemedText>
-        <View style={styles.inputContainer}>
-          <Input
-            onPressOut={(e) => e.stopPropagation()}
-            placeholder="Nombre del libro"
-            keyboardType="default"
-            value={bookName}
-            onChangeText={(value) => {
-              setBookName(value);
-              setHasUnsavedChanges(true);
-            }}
-          />
-
-          <View style={{ width: "75%" }}>
-            <Input
+        <Form methods={formMethods}>
+          <View style={styles.inputContainer}>
+            <FormInput
+              form={formMethods}
+              name={bookRequestFormKeys.bookName}
               onPressOut={(e) => e.stopPropagation()}
-              placeholder="Nombre del autor"
+              placeholder="Nombre del libro"
               keyboardType="default"
-              value={authorName}
-              onChangeText={(value) => {
-                setAuthorName(value);
-                setHasUnsavedChanges(true);
-              }}
             />
+
+            <View style={{ width: "75%" }}>
+              <FormInput
+                form={formMethods}
+                onPressOut={(e) => e.stopPropagation()}
+                placeholder="Nombre del autor"
+                keyboardType="default"
+                name={bookRequestFormKeys.authorName}
+              />
+            </View>
+
+            <FormSelector
+              form={formMethods}
+              name={bookRequestFormKeys.courseIds}
+              options={courses || []}
+              multiple
+            />
+
+            <FormInput
+              form={formMethods}
+              onPressOut={(e) => e.stopPropagation()}
+              placeholder="Comentarios"
+              keyboardType="default"
+              returnKeyType="done"
+              multiline={true}
+              name={bookRequestFormKeys.comments}
+              style={{ height: 100, color: theme.gray.gray400 }}
+            />
+
+            <View style={{ gap: 16 }}>
+              <FormRadioButton
+                form={formMethods}
+                name={bookRequestFormKeys.animations}
+                options={[
+                  { label: "Todas las animaciones", value: "all" },
+                  {
+                    label: "Solo caracteres principales",
+                    value: "main-characters",
+                  },
+                  { label: "Solo datos curiosos", value: "curious-data" },
+                ]}
+              />
+            </View>
           </View>
 
-          <Dropdown
-            value={selectedGrade}
-            onChange={(item: string) => {
-              setSelectedGrade(item);
-              setHasUnsavedChanges(true);
-            }}
-            options={courses || []}
-          />
+          <View style={styles.buttonsContainer}>
+            <Button
+              onPress={formMethods.handleSubmit(onSendRequest)}
+              variant={ButtonVariants.solid}
+              style={{ flex: 1 }}
+              disabled={isCreatingBookRequest || isLoadingCourses}
+            >
+              {isCreatingBookRequest ? (
+                <Loader size="small" />
+              ) : (
+                "Solicitar libro"
+              )}
+            </Button>
 
-          <Input
-            style={{ height: 100, color: theme.gray.gray400 }}
-            onPressOut={(e) => e.stopPropagation()}
-            placeholder="Comentarios"
-            keyboardType="default"
-            returnKeyType="done"
-            multiline={true}
-            value={comments}
-            onChangeText={(value) => {
-              setComments(value);
-              setHasUnsavedChanges(true);
-            }}
-          />
-
-          <View style={{ gap: 16 }}>
-            <RadioButton
-              value="all"
-              status={checked === "all" ? "checked" : "unchecked"}
-              onPress={() => {
-                setChecked("all");
-                setHasUnsavedChanges(true);
-              }}
-              label="Todas las animaciones"
-            />
-            <RadioButton
-              value="main-characters"
-              status={checked === "main-characters" ? "checked" : "unchecked"}
-              onPress={() => {
-                setChecked("main-characters");
-                setHasUnsavedChanges(true);
-              }}
-              label="Solo caracteres principales"
-            />
-
-            <RadioButton
-              value="curious-data"
-              status={checked === "curious-data" ? "checked" : "unchecked"}
-              onPress={() => {
-                setChecked("curious-data");
-                setHasUnsavedChanges(true);
-              }}
-              label="Solo datos curiosos"
-            />
+            <Button
+              onPress={onCancelRequest}
+              variant={ButtonVariants.outlined}
+              style={{ borderColor: theme.error.error500, flex: 1 }}
+              labelStyle={{ color: theme.error.error500 }}
+              disabled={isCreatingBookRequest || isLoadingCourses}
+            >
+              Cancelar
+            </Button>
           </View>
-        </View>
-
-        <View style={styles.buttonsContainer}>
-          <Button
-            onPress={() => onSendRequest()}
-            variant={ButtonVariants.solid}
-            style={{ flex: 1 }}
-            disabled={isCreatingBookRequest || isLoadingCourses}
-          >
-            {isCreatingBookRequest ? (
-              <Loader size="small" />
-            ) : (
-              "Solicitar libro"
-            )}
-          </Button>
-
-          <Button
-            onPress={onCancelRequest}
-            variant={ButtonVariants.outlined}
-            style={{ borderColor: theme.error.error500, flex: 1 }}
-            labelStyle={{ color: theme.error.error500 }}
-            disabled={isCreatingBookRequest || isLoadingCourses}
-          >
-            Cancelar
-          </Button>
-        </View>
+        </Form>
       </ScrollView>
       <CancelRequestModal
         isVisible={isVisible}
@@ -268,7 +261,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   inputContainer: {
-    gap: 16,
+    gap: 4,
     paddingHorizontal: 48,
   },
   buttonsContainer: {

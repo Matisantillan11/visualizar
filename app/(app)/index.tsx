@@ -17,7 +17,7 @@ import Card from "./components/card/card.component";
 import { EmptyState } from "./components/empty-state";
 import useBooksAligment, { BooksAligment } from "./hooks/use-books-aligment";
 
-export default function app() {
+export default function App() {
   const [selectedGrade, setSelectedGrade] = useState("all");
   const { bookAligment, setDirection } = useBooksAligment();
   const { user } = useAuthContext();
@@ -63,7 +63,9 @@ export default function app() {
         {isTeacher ? (
           <Dropdown
             value={selectedGrade}
-            onChange={(item: string) => setSelectedGrade(item)}
+            onChange={(item: string | string[]) =>
+              setSelectedGrade(item as string)
+            }
             options={courses || []}
           />
         ) : (

@@ -73,7 +73,10 @@ export interface BookResponse {
 }
 
 import { User } from "@/app/(auth)/interfaces";
+import { InferType } from "@/interfaces/zod.types";
+import { Path } from "react-hook-form";
 import { Course } from "../courses";
+import { formSchema } from "./schema";
 
 interface BookRequestCourse {
   id: string;
@@ -102,3 +105,11 @@ export interface BookRequest {
   bookRequestCourse: BookRequestCourse[];
   status: BookRequestStatus;
 }
+
+export type FormValues = InferType<typeof formSchema>;
+
+export type NestedKeys<T> = {
+  [K in keyof T]: T[K] extends string ? Path<FormValues> : NestedKeys<T[K]>;
+};
+
+export type NestedStringRecord = string | { [key: string]: NestedStringRecord };
