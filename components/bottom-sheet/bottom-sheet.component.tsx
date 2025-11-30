@@ -1,24 +1,29 @@
 import { theme } from '@/constants';
-import { BottomSheet as BottomSheetModal } from '@rneui/themed';
-import { useCallback } from 'react';
+import { BottomSheet as BottomSheetModal } from "@rneui/themed";
 
-export default function BottomSheet({ children, index = 1, items, onClose, ...props }: any) {
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log('handleSheetChanges', index);
-  }, []);
-
+export default function BottomSheet({
+  children,
+  index = 1,
+  items,
+  onClose,
+  ...props
+}: any) {
   return (
     <BottomSheetModal
       {...props}
-      onChange={handleSheetChanges}
       index={index}
       containerStyle={{
-        backgroundColor: '#00000085',
+        backgroundColor: "#00000085",
         paddingBottom: -35,
       }}
-      onBackdropPress={() => onClose()}>
+      onBackdropPress={() => onClose()}
+    >
       {children({
-        styles: { backgroundColor: theme.primary.brand950, padding: 0, zIndex: 9999999 },
+        styles: {
+          backgroundColor: theme.primary.brand950,
+          padding: 0,
+          zIndex: 9999999,
+        },
       })}
     </BottomSheetModal>
   );

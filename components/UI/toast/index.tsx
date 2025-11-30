@@ -48,6 +48,12 @@ export const Toast = () => {
     customError: (props: any) => (
       <ToastContainer type="customError" message={props.text1} />
     ),
+    error: (props: any) => (
+      <ToastContainer type="customError" message={props.text1} />
+    ),
+    success: (props: any) => (
+      <ToastContainer type="customSuccess" message={props.text1} />
+    ),
   };
 
   return (

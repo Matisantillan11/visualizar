@@ -1,7 +1,8 @@
 import useToast from "@/components/UI/toast/use-toast";
 import { useStorage } from "@/hooks";
 import { useOnboarding } from "@/hooks/use-onboarding.hook";
-import { fetcher } from "@/lib/fetcher";
+import { useSendOtp, useVerifyOtp } from "@/lib/react-query/auth";
+import { AuthSession, AuthUser } from "@/lib/react-query/auth/auth-types";
 import { useRouter } from "expo-router";
 import {
   createContext,
@@ -11,7 +12,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import { AuthResponse, AuthSession, AuthUser } from "../interfaces";
 
 type AuthStateContextProps = {
   userEmailAttempt: string | undefined;
@@ -49,7 +49,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AuthUser | undefined>(undefined);
   const [session, setSession] = useState<AuthSession | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isValidatingCode, setIsValidatingCode] = useState<boolean>(false);
   const [wasCodeResent, setWasCodeResent] = useState<boolean>(false);
   const [userEmailAttempt, setUserEmailAttempt] = useState<string | undefined>(
     undefined
@@ -90,56 +89,18 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     await removeItem("user");
   };
 
-  const onSendEmailCode = async (isResending: boolean) => {
-    try {
-      setIsLoading(true);
-      await fetcher({
-        url: "/auth/send-otp",
-        init: {
-          method: "POST",
-          body: JSON.stringify({ email: userEmailAttempt }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-        withAuthentication: false, // No auth needed for sending OTP
-      });
-
-      if (!isResending) {
-        router.push("/(auth)/check-your-email");
-      } else {
-        setWasCodeResent(true);
-      }
-    } catch (error) {
-      if (isResending) setWasCodeResent(false);
+  const { mutate: sendOtp, isPending: isSendingOtp } = useSendOtp({
+    onError: (error) => {
       console.error("Error sending OTP:", error);
       showToast(
         "Error al enviar el código OTP. Por favor, intenta nuevamente.",
         "customError"
       );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+  });
 
-  const onValidateCode = async () => {
-    setIsValidatingCode(true);
-    try {
-      const response = await fetcher<AuthResponse>({
-        url: "/auth/verify-otp",
-        init: {
-          method: "POST",
-          body: JSON.stringify({
-            email: userEmailAttempt,
-            token: userCodeAttempt,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-        withAuthentication: false, // No auth needed for verification
-      });
-
+  const { mutate: verifyOtp, isPending: isVerifyingOtp } = useVerifyOtp({
+    onSuccess: async (response) => {
       if (response && response.access_token && response.user) {
         const authUser: AuthUser = {
           id: response.user.id,
@@ -152,9 +113,9 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
         const authSession: AuthSession = {
           user: authUser,
-          token: response.access_token, // Main token from API
-          accessToken: response.access_token, // Same token for both fields
-          expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days from now
+          token: response.access_token,
+          accessToken: response.access_token,
+          expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000,
         };
 
         if (authSession) {
@@ -167,19 +128,46 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
           router.navigate("/(app)");
         }
       }
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error("Error validating code:", error);
       showToast(
         "Error al validar el código. Por favor, intenta nuevamente.",
         "customError"
       );
-    } finally {
-      setIsValidatingCode(false);
-    }
+    },
+  });
+
+  const onSendEmailCode = async (isResending: boolean) => {
+    if (!userEmailAttempt) return;
+
+    sendOtp(
+      { email: userEmailAttempt },
+      {
+        onSuccess: () => {
+          if (!isResending) {
+            router.push("/(auth)/check-your-email");
+          } else {
+            setWasCodeResent(true);
+          }
+        },
+        onError: () => {
+          if (isResending) setWasCodeResent(false);
+        },
+      }
+    );
+  };
+
+  const onValidateCode = async () => {
+    if (!userEmailAttempt || !userCodeAttempt) return;
+
+    verifyOtp({
+      email: userEmailAttempt,
+      token: userCodeAttempt,
+    });
   };
 
   const handleSignOut = async () => {
-    console.log("click");
     await removeSession();
     setSession(undefined);
     setUser(undefined);
@@ -201,8 +189,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
         const storedSession = await getSession();
         const storedUser = await getUser();
-
-        console.log({ storedSession, session, hasToShowOnboarding });
 
         if (storedSession && storedUser) {
           if (storedUser !== user && storedSession !== session) {
@@ -236,8 +222,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         setUserEmailAttempt,
         userCodeAttempt,
         setUserCodeAttempt,
-        isLoading,
-        isValidatingCode,
+        isLoading: isLoading || isSendingOtp,
+        isValidatingCode: isVerifyingOtp,
         wasCodeResent,
         onSendEmailCode,
         onValidateCode,

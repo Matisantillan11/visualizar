@@ -11,9 +11,9 @@ import {
 import { StyleSheet, View } from 'react-native';
 
 import { theme } from '@/constants';
-import React, { useEffect } from 'react';
-import ToastManager, { Toast } from 'toastify-react-native';
+import React, { useEffect } from "react";
 import { useAuthContext } from './hooks/useAuthContext';
+import useToast from "@/components/UI/toast/use-toast";
 
 export default function ValidateCode() {
   const {
@@ -26,9 +26,14 @@ export default function ValidateCode() {
     onValidateCode,
   } = useAuthContext();
 
+  const { showToast } = useToast();
+
   useEffect(() => {
     if (!isLoading && wasCodeResent) {
-      Toast.success('Hemos enviado un nuevo codigo a tu correo electronico!');
+      showToast(
+        "Hemos enviado un nuevo codigo a tu correo electronico!",
+        "customSuccess"
+      );
     }
   }, [isLoading, wasCodeResent]);
 
@@ -50,24 +55,30 @@ export default function ValidateCode() {
           onChangeText={(value) => setUserCodeAttempt(value)}
         />
       </View>
-      <ThemedText variant={ThemedTextVariants.default} style={styles.noReceived}>
+      <ThemedText
+        variant={ThemedTextVariants.default}
+        style={styles.noReceived}
+      >
         No recibiste tu código? Asegurate de chequear tu spam o
         <ThemedText
           onPress={() => onSendEmailCode(true)}
           variant={ThemedTextVariants.default}
-          style={styles.coloredNoReceivedText}>
-          {' '}
+          style={styles.coloredNoReceivedText}
+        >
+          {" "}
           solicita nuevas instrucciones.
         </ThemedText>
       </ThemedText>
 
       <View style={styles.buttonsContainer}>
-        <Button onPress={onValidateCode} variant={ButtonVariants.solid} disabled={isLoading}>
-          {isValidatingCode ? <Loader /> : 'Validar código'}
+        <Button
+          onPress={onValidateCode}
+          variant={ButtonVariants.solid}
+          disabled={isLoading}
+        >
+          {isValidatingCode ? <Loader /> : "Validar código"}
         </Button>
       </View>
-
-      <ToastManager position="bottom" animationStyle="fade" showProgressBar={false} />
     </Container>
   );
 }

@@ -25,7 +25,7 @@ export const useStorage = () => {
         }
       });
     } catch (e) {
-      console.log("error saving item", e);
+      console.error("error saving item", e);
     }
 
     console.log("Done saving.");
@@ -36,7 +36,7 @@ export const useStorage = () => {
       const storedValue = await AsyncStorage.getItem(key);
       return storedValue != null ? JSON.parse(storedValue) : null;
     } catch (e) {
-      console.log("error getting item", e);
+      console.error("error getting item", e);
     }
 
     console.log("Done getting.");
@@ -52,7 +52,7 @@ export const useStorage = () => {
         await AsyncStorage.removeItem(key);
       }
     } catch (e) {
-      console.log("error removing item", e);
+      console.error("error removing item", e);
     }
 
     console.log("Done.");

@@ -11,13 +11,12 @@ export const useOnboarding = () => {
   const checkOnboarding = async () => {
     try {
       const onboarding = await getItem("onboarding");
-      console.log({ onboarding });
 
       if (onboarding) {
         setHasToShowOnboarding(false);
       }
     } catch (error) {
-      console.log("error checking onboarding", error);
+      console.error("error checking onboarding", error);
     } finally {
       setIsChecking(false);
     }

@@ -13,8 +13,6 @@ export default function Requests() {
 
   const { data: requests, isLoading } = useBookRequests();
 
-  console.log({ requests });
-
   const handleAddRequest = () => {
     router.navigate("/book/request-book");
   };
