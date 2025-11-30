@@ -11,6 +11,7 @@ export const useOnboarding = () => {
   const checkOnboarding = async () => {
     try {
       const onboarding = await getItem("onboarding");
+      console.log({ onboarding });
 
       if (onboarding) {
         setHasToShowOnboarding(false);

@@ -1,5 +1,6 @@
 import useToast from "@/components/UI/toast/use-toast";
 import { useStorage } from "@/hooks";
+import { useOnboarding } from "@/hooks/use-onboarding.hook";
 import { fetcher } from "@/lib/fetcher";
 import { useRouter } from "expo-router";
 import {
@@ -29,8 +30,13 @@ type AuthStateContextProps = {
     | undefined;
   onSendEmailCode: (isResending: boolean) => Promise<void>;
   onValidateCode: () => Promise<void>;
+  disableOnboardingPage: () => Promise<void>;
   user: AuthUser | undefined;
   session: AuthSession | undefined;
+
+  //onboarding
+  hasToShowOnboarding: boolean;
+  isChecking: boolean;
 };
 
 export const AuthStateContext = createContext<
@@ -52,11 +58,13 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     undefined
   );
 
+  const { hasToShowOnboarding, isChecking } = useOnboarding();
   const { showToast } = useToast();
   const { storeItem, getItem, removeItem } = useStorage();
 
   const disableOnboardingPage = async () => {
     await storeItem({ pairs: [{ key: "onboarding", value: true }] });
+    router.push("/(auth)");
   };
 
   const saveSession = async (session: AuthSession) => {
@@ -186,16 +194,22 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     const onAuthStateChange = async () => {
       try {
         setIsLoading(true);
-        const session = await getSession();
-        const user = await getUser();
 
-        if (session && user) {
-          setSession(session as AuthSession);
-          setUser(user as AuthUser);
+        const storedSession = await getSession();
+        const storedUser = await getUser();
+
+        if (storedSession && storedUser) {
+          setSession(storedSession as AuthSession);
+          setUser(storedUser as AuthUser);
         } else {
           setSession(undefined);
           setUser(undefined);
-          router.push("/(auth)");
+
+          if (hasToShowOnboarding) {
+            router.replace("/");
+          } else {
+            router.replace("/(auth)");
+          }
         }
       } catch (error) {
         console.error("Error getting session and user:", error);
@@ -204,8 +218,12 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       }
     };
 
+    if (isChecking) {
+      return;
+    }
+
     onAuthStateChange();
-  }, []);
+  }, [isChecking, hasToShowOnboarding, user, session]);
 
   return (
     <AuthStateContext.Provider
@@ -221,8 +239,13 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         onValidateCode,
         handleSignOut,
         getUserData,
+        disableOnboardingPage,
         user,
         session,
+
+        //onboarding
+        hasToShowOnboarding,
+        isChecking,
       }}
     >
       {children}
