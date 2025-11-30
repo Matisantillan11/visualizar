@@ -9,12 +9,19 @@ import {
 import { BlurView } from "@/components/UI/blur-view/blur-view.component";
 import { theme } from "@/constants";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { Redirect } from "expo-router";
 import React from "react";
 import { useAuthContext } from "./(auth)/hooks/useAuthContext";
 
 export default function Onboarding() {
   const { height } = useWindowDimensions();
-  const { isLoading, disableOnboardingPage, isChecking } = useAuthContext();
+  const {
+    isLoading,
+    disableOnboardingPage,
+    isChecking,
+    hasToShowOnboarding,
+    user,
+  } = useAuthContext();
 
   if (isChecking || isLoading)
     return (
@@ -22,6 +29,12 @@ export default function Onboarding() {
         <Loader />
       </View>
     );
+
+  if (!hasToShowOnboarding && !user) return <Redirect href={"/(auth)"} />;
+
+  if (!hasToShowOnboarding && user) return <Redirect href={"/(app)"} />;
+
+
   return (
     <View
       style={{

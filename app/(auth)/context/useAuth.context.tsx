@@ -191,6 +191,10 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
+    if (isChecking) {
+      return;
+    }
+
     const onAuthStateChange = async () => {
       try {
         setIsLoading(true);
@@ -198,9 +202,13 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         const storedSession = await getSession();
         const storedUser = await getUser();
 
+        console.log({ storedSession, session, hasToShowOnboarding });
+
         if (storedSession && storedUser) {
-          setSession(storedSession as AuthSession);
-          setUser(storedUser as AuthUser);
+          if (storedUser !== user && storedSession !== session) {
+            setSession(storedSession as AuthSession);
+            setUser(storedUser as AuthUser);
+          }
         } else {
           setSession(undefined);
           setUser(undefined);
@@ -218,12 +226,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       }
     };
 
-    if (isChecking) {
-      return;
-    }
-
     onAuthStateChange();
-  }, [isChecking, hasToShowOnboarding, user, session]);
+  }, [isChecking, hasToShowOnboarding]);
 
   return (
     <AuthStateContext.Provider

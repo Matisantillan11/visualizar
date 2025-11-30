@@ -8,11 +8,12 @@ export const Button: FC<ButtonProps> = ({
   variant = ButtonVariants.solid,
   leftIcon,
   style,
+  labelStyle,
   ...props
 }) => {
   const { variant: buttonVariant, textVariant } = buttonVariants(variant);
   const buttonStyle = [styles.wrapper, buttonVariant, style];
-  const textStyle = [styles.text, textVariant];
+  const textStyle = [styles.text, textVariant, labelStyle];
   return (
     <TouchableOpacity style={buttonStyle} {...props}>
       {leftIcon}

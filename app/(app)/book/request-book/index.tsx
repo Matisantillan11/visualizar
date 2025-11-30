@@ -16,10 +16,12 @@ import { VerticalLinearGradient } from "@/components/linear-gradient/linear-grad
 import useToast from "@/components/UI/toast/use-toast";
 import { theme } from "@/constants";
 import { fetcher } from "@/lib/fetcher";
+import { usePreventRemove } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { getAnimationsSelected } from "./helpers";
+import CancelRequestModal from "./modals/cancel-request";
 
 export default function RequestBook() {
   const { user } = useAuthContext();
@@ -35,11 +37,22 @@ export default function RequestBook() {
   const [bookName, setBookName] = useState<string>("");
   const [authorName, setAuthorName] = useState<string>("");
   const [comments, setComments] = useState<string>("");
+  const [isVisible, setIsVisible] = useState(false);
   const [checked, setChecked] = React.useState("all");
+  const [navigationEvent, setNavigationEvent] = useState<any>(null);
 
   const isIos = Platform.OS === "ios";
 
   const { showToast } = useToast();
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  usePreventRemove(hasUnsavedChanges, ({ data }) => {
+    // Store the navigation event to use later
+    console.log(data);
+    console.log("prevent remove");
+    // Show a confirmation dialog
+    setIsVisible(true);
+  });
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -107,6 +120,7 @@ export default function RequestBook() {
 
       if ("id" in response) {
         onResetForm();
+        setHasUnsavedChanges(false);
         showToast("Libro solicitado correctamente", "customSuccess");
         setTimeout(() => {
           router.navigate(`/(app)`);
@@ -117,6 +131,31 @@ export default function RequestBook() {
       console.error(error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const onClose = () => {
+    setIsVisible(false);
+  };
+
+  const onConfirm = () => {
+    onResetForm();
+    setHasUnsavedChanges(false);
+    setIsVisible(false);
+
+    // Navigate back
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace("/(app)");
+    }
+  };
+
+  const onCancelRequest = () => {
+    if (hasUnsavedChanges) {
+      setIsVisible(true);
+    } else {
+      onConfirm();
     }
   };
 
@@ -136,7 +175,10 @@ export default function RequestBook() {
             placeholder="Nombre del libro"
             keyboardType="default"
             value={bookName}
-            onChangeText={(value) => setBookName(value)}
+            onChangeText={(value) => {
+              setBookName(value);
+              setHasUnsavedChanges(true);
+            }}
           />
 
           <View style={{ width: "75%" }}>
@@ -145,13 +187,19 @@ export default function RequestBook() {
               placeholder="Nombre del autor"
               keyboardType="default"
               value={authorName}
-              onChangeText={(value) => setAuthorName(value)}
+              onChangeText={(value) => {
+                setAuthorName(value);
+                setHasUnsavedChanges(true);
+              }}
             />
           </View>
 
           <Dropdown
             value={selectedGrade}
-            onChange={(item: string) => setSelectedGrade(item)}
+            onChange={(item: string) => {
+              setSelectedGrade(item);
+              setHasUnsavedChanges(true);
+            }}
             options={courses || []}
           />
 
@@ -163,27 +211,39 @@ export default function RequestBook() {
             returnKeyType="done"
             multiline={true}
             value={comments}
-            onChangeText={(value) => setComments(value)}
+            onChangeText={(value) => {
+              setComments(value);
+              setHasUnsavedChanges(true);
+            }}
           />
 
           <View style={{ gap: 16 }}>
             <RadioButton
               value="all"
               status={checked === "all" ? "checked" : "unchecked"}
-              onPress={() => setChecked("all")}
+              onPress={() => {
+                setChecked("all");
+                setHasUnsavedChanges(true);
+              }}
               label="Todas las animaciones"
             />
             <RadioButton
               value="main-characters"
               status={checked === "main-characters" ? "checked" : "unchecked"}
-              onPress={() => setChecked("main-characters")}
+              onPress={() => {
+                setChecked("main-characters");
+                setHasUnsavedChanges(true);
+              }}
               label="Solo caracteres principales"
             />
 
             <RadioButton
               value="curious-data"
               status={checked === "curious-data" ? "checked" : "unchecked"}
-              onPress={() => setChecked("curious-data")}
+              onPress={() => {
+                setChecked("curious-data");
+                setHasUnsavedChanges(true);
+              }}
               label="Solo datos curiosos"
             />
           </View>
@@ -193,11 +253,26 @@ export default function RequestBook() {
           <Button
             onPress={() => onSendRequest()}
             variant={ButtonVariants.solid}
+            style={{ flex: 1 }}
           >
             {isLoading ? <Loader size="small" /> : "Solicitar libro"}
           </Button>
+
+          <Button
+            onPress={onCancelRequest}
+            variant={ButtonVariants.outlined}
+            style={{ borderColor: theme.error.error500, flex: 1 }}
+            labelStyle={{ color: theme.error.error500 }}
+          >
+            Cancelar
+          </Button>
         </View>
       </ScrollView>
+      <CancelRequestModal
+        isVisible={isVisible}
+        onClose={onClose}
+        onConfirm={onConfirm}
+      />
       <Toast />
     </VerticalLinearGradient>
   );
@@ -221,6 +296,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 48,
   },
   buttonsContainer: {
+    flexDirection: "row",
     gap: 16,
     paddingHorizontal: 48,
     marginTop: 32,

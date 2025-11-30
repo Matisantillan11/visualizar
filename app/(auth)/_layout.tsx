@@ -1,13 +1,13 @@
 import { AuthNavbar } from '@/components/navbar/auth-navbar.component';
-import { Stack } from "expo-router";
+import { Redirect, Stack } from "expo-router";
 import { useAuthContext } from './hooks/useAuthContext';
 
 export default function AuthLayout() {
   const { user } = useAuthContext();
 
-  /* if (user && user.email) {
-    return <Redirect href={'/(app)'} />;
-  } */
+  if (user && user.email) {
+    return <Redirect href={"/(app)"} />;
+  }
 
   return (
     <Stack
