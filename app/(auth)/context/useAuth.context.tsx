@@ -151,8 +151,23 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
             setWasCodeResent(true);
           }
         },
-        onError: () => {
+        onError: (error) => {
           if (isResending) setWasCodeResent(false);
+          if (
+            error.message.includes(
+              "Account is temporarily blocked due to multiple failed OTP attempts"
+            )
+          ) {
+            showToast(
+              "Cuenta bloqueada temporalmente, intenta nuevamente más tarde.",
+              "customError"
+            );
+          } else {
+            showToast(
+              "Error al enviar el código OTP. Por favor, intenta nuevamente.",
+              "customError"
+            );
+          }
         },
       }
     );
@@ -161,10 +176,31 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const onValidateCode = async () => {
     if (!userEmailAttempt || !userCodeAttempt) return;
 
-    verifyOtp({
-      email: userEmailAttempt,
-      token: userCodeAttempt,
-    });
+    verifyOtp(
+      {
+        email: userEmailAttempt,
+        token: userCodeAttempt,
+      },
+      {
+        onError: (error) => {
+          if (
+            error.message.includes(
+              "Account is temporarily blocked due to multiple failed OTP attempts"
+            )
+          ) {
+            showToast(
+              "Cuenta bloqueada temporalmente, intenta nuevamente más tarde.",
+              "customError"
+            );
+          } else {
+            showToast(
+              "Error al validar el código. Por favor, intenta nuevamente.",
+              "customError"
+            );
+          }
+        },
+      }
+    );
   };
 
   const handleSignOut = async () => {
