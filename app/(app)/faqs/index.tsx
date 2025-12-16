@@ -1,6 +1,6 @@
 import { Accordion, Container, ThemedText } from "@/components/UI";
 import { ScrollView, View } from "react-native";
-import FaqContent from "./components/faq-content";
+import FaqContent, { FaqSubContent } from "./components/faq-content";
 import { FAQS } from "./constants";
 
 export default function Faqs() {
@@ -26,6 +26,16 @@ export default function Faqs() {
             key={index}
           >
             <FaqContent content={faq.content} />
+            {faq.subContent ? (
+              <View style={{ marginTop: 20 }}>
+                {faq.subContent.map((subContent, index) => (
+                  <FaqSubContent
+                    content={`${subContent.title}: ${subContent.content}`}
+                    key={index}
+                  />
+                ))}
+              </View>
+            ) : null}
           </Accordion>
         ))}
       </ScrollView>
