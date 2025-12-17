@@ -20,18 +20,19 @@ import useBooksAligment, { BooksAligment } from "./hooks/use-books-aligment";
 export default function App() {
   const [selectedGrade, setSelectedGrade] = useState("all");
   const { bookAligment, setDirection } = useBooksAligment();
-  const { user } = useAuthContext();
+  const { user, session } = useAuthContext();
 
   const isHorizontal = bookAligment === BooksAligment.horizontal;
   const isTeacher = user?.role === Role.TEACHER;
   const isIos = Platform.OS === "ios";
+  const userCourseId = session?.user?.course?.id;
 
   const { data: coursesData, isLoading: isLoadingCourses } =
     useCoursesByTeacherId(user?.teacherId, isTeacher);
 
   const { data: books, isLoading: isLoadingBooks } = useBooksByCourseId(
-    selectedGrade,
-    !isLoadingCourses && isTeacher
+    isTeacher ? selectedGrade : userCourseId,
+    !isLoadingCourses
   );
 
   const courses = useMemo(

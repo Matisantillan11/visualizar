@@ -485,12 +485,14 @@ const Animate = () => {
           )}
         </CameraView>
 
-        <BottomNavigation
-          handlePrevious={handlePrevious}
-          handleNext={handleNext}
-          currentIndex={currentIndex}
-          optionsLength={models.length}
-        />
+        {models.length > 1 && (
+          <BottomNavigation
+            handlePrevious={handlePrevious}
+            handleNext={handleNext}
+            currentIndex={currentIndex}
+            optionsLength={models.length}
+          />
+        )}
       </View>
     </View>
   );

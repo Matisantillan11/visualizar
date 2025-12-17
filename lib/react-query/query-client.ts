@@ -5,7 +5,7 @@ const defaultQueryConfig = {
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
     retry: 3,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
     refetchOnReconnect: true,
     refetchOnMount: true,
   },

@@ -18,6 +18,10 @@ export interface AuthUser {
   id: string;
   teacherId?: string;
   studentId?: string;
+  course: {
+    id: string;
+    name: string;
+  };
   role: Role;
   email: string;
   name?: string;
@@ -37,6 +41,10 @@ export interface AuthResponse {
     id: string;
     teacherId?: string;
     studentId?: string;
+    course: {
+      id: string;
+      name: string;
+    };
     email: string;
     name: string | null;
     role: Role;

@@ -7,6 +7,7 @@ import {
 } from "@/components/UI";
 import { theme } from "@/constants";
 import { fetcher } from "@/lib/fetcher";
+import { Book } from "@/lib/react-query/books/book-types";
 import { ExpoWebGLRenderingContext, GLView } from "expo-gl";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Renderer, THREE } from "expo-three";
@@ -18,7 +19,6 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import { Book } from "../types/book";
 import { useModelPreload } from "./context/model-preload.context";
 import { parseAnimations } from "./utils";
 
@@ -31,6 +31,8 @@ export default function BookDetail() {
   const { setBookId, setModelUrls } = useModelPreload();
 
   const [book, setBook] = useState<Book | undefined>(undefined);
+  const [showfullDescription, setShowfullDescription] =
+    useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const isIos = Platform.OS === "ios";
@@ -144,8 +146,13 @@ export default function BookDetail() {
                 marginTop: -225,
                 paddingHorizontal: 32,
               }}
+              onPress={() => setShowfullDescription(!showfullDescription)}
             >
-              {book?.description?.slice(0, 300)}...
+              {book?.description &&
+              book?.description?.length > 300 &&
+              !showfullDescription
+                ? book?.description?.slice(0, 300) + "..."
+                : book?.description}
             </ThemedText>
 
             <View

@@ -109,6 +109,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
           name: response.user.name ?? "",
           role: response.user.role,
           email: response.user.email,
+          course: response.user.course,
         };
 
         const authSession: AuthSession = {

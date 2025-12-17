@@ -9,6 +9,8 @@ export default function Profile() {
   const { user } = useAuthContext();
   const isTeacher = user?.role === Role.TEACHER;
 
+  const courseName = user?.course?.name;
+
   if (!user) return null;
 
   return (
@@ -50,7 +52,7 @@ export default function Profile() {
           variant={ThemedTextVariants.default}
           style={{ fontWeight: "bold", fontSize: 14 }}
         >
-          {user?.name} {!isTeacher ? "- 2A" : ""}
+          {user?.name} {!isTeacher ? `- ${courseName}` : ""}
         </ThemedText>
 
         <ThemedText

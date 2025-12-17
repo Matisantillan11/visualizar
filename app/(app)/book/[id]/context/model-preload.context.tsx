@@ -81,10 +81,10 @@ export const ModelPreloadProvider: React.FC<ModelPreloadProviderProps> = ({
     isInitialLoadingRef.current = isInitialLoading;
   }, [isInitialLoading]);
 
-  // Keep currentBookIdRef in sync with state
+  /* // Keep currentBookIdRef in sync with state
   useEffect(() => {
     currentBookIdRef.current = currentBookId;
-  }, [currentBookId]);
+  }, [currentBookId]); */
 
   // Function to set bookId (called from book detail page)
   const setBookId = useCallback((bookId: string | string[] | undefined) => {
@@ -126,7 +126,7 @@ export const ModelPreloadProvider: React.FC<ModelPreloadProviderProps> = ({
     setIsInitialLoading(true);
     setModels([]);
     isCleaningRef.current = false;
-  }, []);
+  }, [currentBookId]);
 
   // Initialize model definitions when bookId and modelUrls are available
   // This only creates the model definitions, doesn't load them
@@ -165,7 +165,7 @@ export const ModelPreloadProvider: React.FC<ModelPreloadProviderProps> = ({
     setModels(modelDefinitions);
     setIsInitialLoading(false);
     isInitialLoadingRef.current = false;
-  }, [currentBookId, modelUrls, cleanup]);
+  }, [currentBookIdRef, currentBookId, modelUrls, cleanup]);
 
   // Function to load a model on-demand
   const loadModelOnDemand = useCallback(

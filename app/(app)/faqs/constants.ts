@@ -16,7 +16,7 @@ export const FAQS = [
   },
   {
     title:
-      "Qué significan los distintos estados de una solicitud de alta de libro?",
+      "¿Qué significan los distintos estados de una solicitud de alta de libro?",
     content:
       "Si sos profesor, cuando realizás una solicitud desde la app, en la sección “Mis solicitudes” vas a ver un estado asociado a cada pedido:",
     subContent: [
