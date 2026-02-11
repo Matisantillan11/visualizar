@@ -112,21 +112,21 @@ Teachers can request new books to be added to their course catalog through a for
 ### Teacher Experience
 
 <div style="max-width: 650px; display: flex; flex-direction: row; flex-wrap: wrap; gap: 4px; justify-content: center; align-items: center;">
-   <img src="https://qhegifghvhrxbrijvsjh.supabase.co/storage/v1/object/public/visualizar-attachments/teacher-filters.gif"width="300" />
+   <img src="./assets/images/teacher-filters.gif"width="300" />
 
-   <img src="https://qhegifghvhrxbrijvsjh.supabase.co/storage/v1/object/public/visualizar-attachments/animations.gif" width="300" />
+   <img src="./assets/images/animations.gif" width="300" />
 
-   <img src="https://qhegifghvhrxbrijvsjh.supabase.co/storage/v1/object/public/visualizar-attachments/faqs.gif" width="300" />
+   <img src="./assets/images/faqs.gif" width="300" />
 
-   <img src="https://qhegifghvhrxbrijvsjh.supabase.co/storage/v1/object/public/visualizar-attachments/request-book.gif" width="300" />
+   <img src="./assets/images/request-book.gif" width="300" />
 </div>
 
 ### Student Experience
 
 <div style="max-width: 650px; display: flex; flex-direction: row; flex-wrap: wrap; gap: 4px; justify-content: center; align-items: center;">
-   <img src="https://qhegifghvhrxbrijvsjh.supabase.co/storage/v1/object/public/visualizar-attachments/animations-student.gif"width="300" />
+   <img src="./assets/images/animations-student.gif"width="300" />
 
-   <img src="https://qhegifghvhrxbrijvsjh.supabase.co/storage/v1/object/public/visualizar-attachments/faqs-student.gif" width="300" />
+   <img src="./assets/images/faqs-student.gif" width="300" />
 </div>
 
 ## 🔑 License
